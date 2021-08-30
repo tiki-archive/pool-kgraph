@@ -15,6 +15,9 @@ public class ConfigProperties {
     @Value("${com.mytiki.kgraph.jwt.public_key}")
     private String jwtPublicKey;
 
+    @Value("${com.mytiki.kgraph.db.name}")
+    private String dbName;
+
     public String getSpringProfilesActive() {
         return springProfilesActive;
     }
@@ -29,5 +32,13 @@ public class ConfigProperties {
 
     public void setJwtPublicKey(String jwtPublicKey) {
         this.jwtPublicKey = jwtPublicKey;
+    }
+
+    public String getDbName() {
+        return dbName;
+    }
+
+    public void setDbName(String dbName) {
+        this.dbName = dbName;
     }
 }

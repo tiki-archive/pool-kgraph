@@ -7,6 +7,7 @@ package com.mytiki.kgraph.main;
 
 import com.mytiki.common.exception.ApiExceptionHandlerDefault;
 import com.mytiki.common.reply.ApiReplyHandlerDefault;
+import com.mytiki.kgraph.config.ConfigArangodb;
 import com.mytiki.kgraph.config.ConfigFeatures;
 import com.mytiki.kgraph.config.ConfigProperties;
 import com.mytiki.kgraph.config.ConfigSecurity;
@@ -22,6 +23,7 @@ import java.util.TimeZone;
         ApiExceptionHandlerDefault.class,
         ApiReplyHandlerDefault.class,
         UtilitiesConfig.class,
+        ConfigArangodb.class,
         ConfigFeatures.class,
         ConfigSecurity.class
 })
