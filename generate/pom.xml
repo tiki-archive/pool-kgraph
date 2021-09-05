@@ -20,7 +20,7 @@
     </parent>
 
     <properties>
-        <start-class>com.mytiki.kgraph.generate.KGraphGenerate</start-class>
+        <start-class>com.mytiki.kgraph_generate.KGraphGenerate</start-class>
     </properties>
 
     <dependencies>
@@ -61,7 +61,7 @@
                             <goal>java</goal>
                         </goals>
                         <configuration>
-                            <mainClass>com.mytiki.kgraph.generate.KGraphGenerate</mainClass>
+                            <mainClass>com.mytiki.kgraph_generate.KGraphGenerate</mainClass>
                         </configuration>
                     </execution>
                 </executions>

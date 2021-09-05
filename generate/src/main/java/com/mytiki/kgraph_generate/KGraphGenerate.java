@@ -3,7 +3,7 @@
  * MIT license. See LICENSE file in root directory.
  */
 
-package com.mytiki.kgraph.generate;
+package com.mytiki.kgraph_generate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.mustachejava.DefaultMustacheFactory;
@@ -21,9 +21,9 @@ import java.util.Map;
 public class KGraphGenerate {
     public static void main(final String... args) {
         MustacheFactory mustacheFactory = new DefaultMustacheFactory();
-        Mustache doMustache = mustacheFactory.compile("com/mytiki/kgraph/generate/GraphVertexDO.mustache");
-        Mustache repositoryMustache = mustacheFactory.compile("com/mytiki/kgraph/generate/GraphVertexRepository.mustache");
-        Mustache lookupMustache = mustacheFactory.compile("com/mytiki/kgraph/generate/GraphVertexLookup.mustache");
+        Mustache doMustache = mustacheFactory.compile("com/mytiki/kgraph_generate/GraphVertexDO.mustache");
+        Mustache repositoryMustache = mustacheFactory.compile("com/mytiki/kgraph_generate/GraphVertexRepository.mustache");
+        Mustache lookupMustache = mustacheFactory.compile("com/mytiki/kgraph_generate/GraphVertexLookup.mustache");
         try {
             KGraphDefs defs = load();
             Map<String, List<Map<String,String>>> lookupPlaceholders = new HashMap<>(1);
@@ -57,7 +57,7 @@ public class KGraphGenerate {
         InputStream is = Thread
                 .currentThread()
                 .getContextClassLoader()
-                .getResourceAsStream("com/mytiki/kgraph/generate/defs.json");
+                .getResourceAsStream("com/mytiki/kgraph_generate/defs.json");
         return mapper.readValue(is, KGraphDefs.class);
     }
 

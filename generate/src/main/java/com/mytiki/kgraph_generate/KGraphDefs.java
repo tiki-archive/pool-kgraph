@@ -3,7 +3,7 @@
  * MIT license. See LICENSE file in root directory.
  */
 
-package com.mytiki.kgraph.generate;
+package com.mytiki.kgraph_generate;
 
 import java.util.List;
 

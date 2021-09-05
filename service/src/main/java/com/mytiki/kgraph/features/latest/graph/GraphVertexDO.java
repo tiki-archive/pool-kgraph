@@ -6,14 +6,22 @@
 package com.mytiki.kgraph.features.latest.graph;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 
-public abstract class GraphVertexDO {
+import java.io.Serializable;
+
+public abstract class GraphVertexDO implements Serializable {
     @Id
-    protected String id;
+    private String id;
 
-    protected String name;
+    private String value;
 
-    public GraphVertexDO() {}
+    @Transient
+    private final String collection;
+
+    public GraphVertexDO(String collection) {
+        this.collection = collection;
+    }
 
     public String getId() {
         return id;
@@ -23,19 +31,28 @@ public abstract class GraphVertexDO {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getValue() {
+        return value;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    public String getCollection() {
+        return collection;
+    }
+
+    public String getRawId(){
+        return collection + "/" + id;
     }
 
     @Override
     public String toString() {
         return "{" +
                 "id='" + id + '\'' +
-                ", name='" + name + '\'' +
+                ", value='" + value + '\'' +
+                ", collection='" + collection + '\'' +
                 "}";
     }
 }

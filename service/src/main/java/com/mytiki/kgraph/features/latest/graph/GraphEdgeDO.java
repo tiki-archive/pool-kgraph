@@ -10,18 +10,25 @@ import com.arangodb.springframework.annotation.From;
 import com.arangodb.springframework.annotation.To;
 import org.springframework.data.annotation.Id;
 
+import java.io.Serializable;
+import java.util.Set;
+
 @Edge(GraphEdgeDO.COLLECTION_NAME)
-public class GraphEdgeDO {
+public class GraphEdgeDO<F extends GraphVertexDO, T extends GraphVertexDO> implements Serializable {
     public static final String COLLECTION_NAME = "edge";
 
     @Id
     private String id;
 
     @From
-    private GraphVertexDO from;
+    private F from;
 
     @To
-    private GraphVertexDO to;
+    private T to;
+
+    private Set<String> fingerprints;
+
+    private Integer qty;
 
     public GraphEdgeDO() {}
 
@@ -33,20 +40,38 @@ public class GraphEdgeDO {
         this.id = id;
     }
 
-    public GraphVertexDO getFrom() {
+    public F getFrom() {
         return from;
     }
 
-    public void setFrom(GraphVertexDO from) {
+    public void setFrom(F from) {
         this.from = from;
     }
 
-    public GraphVertexDO getTo() {
+    public T getTo() {
         return to;
     }
 
-    public void setTo(GraphVertexDO to) {
+    public void setTo(T to) {
         this.to = to;
+    }
+
+    public Set<String> getFingerprints() {
+        return fingerprints;
+    }
+
+    public void setFingerprints(Set<String> fingerprints) {
+        this.fingerprints = fingerprints;
+        if(fingerprints != null)
+            this.qty = fingerprints.size();
+    }
+
+    public Integer getQty() {
+        return qty;
+    }
+
+    public void setQty(Integer qty) {
+        this.qty = qty;
     }
 
     @Override
@@ -55,6 +80,8 @@ public class GraphEdgeDO {
                 "id='" + id + '\'' +
                 ", from='" + from.toString() + '\'' +
                 ", to='" + to.toString() + '\'' +
+                ", qty='" + qty.toString() + '\'' +
+                ", fingerprints='" + fingerprints.toString() + '\'' +
                 "}";
     }
 }

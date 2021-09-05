@@ -26,7 +26,7 @@ public class GraphVertexLookup {
 {{/vertices}}
     }
 
-    public Class<?> getDOClass(String name){
+    public Class<? extends GraphVertexDO> getDOClass(String name){
         switch (name){
 {{#vertices}}
             case "{{{name_camel}}}":
@@ -37,7 +37,7 @@ public class GraphVertexLookup {
         }
     }
 
-    public ArangoRepository getRepository(String name){
+    public GraphVertexRepository<? extends GraphVertexDO> getRepository(String name){
         switch (name){
 {{#vertices}}
             case "{{{name_camel}}}":

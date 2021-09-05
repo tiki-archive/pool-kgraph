@@ -8,9 +8,10 @@ package com.mytiki.kgraph.features.latest.add;
 import com.mytiki.common.ApiConstants;
 import com.mytiki.common.reply.ApiReplyAO;
 import com.mytiki.common.reply.ApiReplyAOFactory;
-import org.springframework.web.bind.annotation.*;
-
-import java.lang.reflect.InvocationTargetException;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(value = AddController.PATH_CONTROLLER)
@@ -24,8 +25,7 @@ public class AddController {
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public ApiReplyAO<AddAO> post(@RequestBody AddAO body) throws
-            InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        return ApiReplyAOFactory.ok(addService.process(body));
+    public ApiReplyAO<AddAO> post(@RequestBody AddAO body) {
+        return ApiReplyAOFactory.ok(addService.execute(body));
     }
 }

@@ -10,17 +10,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class AddAOVertex {
     private String type;
-    private String name;
+    private String value;
 
-    public AddAOVertex() {
-    }
+    public AddAOVertex() {}
 
     @JsonCreator
     public AddAOVertex(
             @JsonProperty(required = true) String type,
             @JsonProperty(required = true) String name) {
         this.type = type;
-        this.name = name;
+        this.value = name;
     }
 
     public String getType() {
@@ -31,11 +30,11 @@ public class AddAOVertex {
         this.type = type;
     }
 
-    public String getName() {
-        return name;
+    public String getValue() {
+        return value;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setValue(String value) {
+        this.value = value;
     }
 }
