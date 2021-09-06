@@ -1,0 +1,33 @@
+type Query {
+    find(start: String): AOVertex
+}
+
+type Mutation {
+    addEdge(
+        from: AOVertexInput!
+        to: AOVertexInput!
+        fingerprint: String!
+    ): String
+}
+
+type AOEdge {
+    qty: Int
+    from: AOVertex,
+    to: AOVertex
+}
+
+type AOVertex {
+    type: String
+    value: String
+    edges: [AOEdge]
+}
+
+input AOVertexInput {
+    type: String
+    value: String
+    companyParams: AOVertexInputCompany
+}
+
+input AOVertexInputCompany {
+    logo: String
+}

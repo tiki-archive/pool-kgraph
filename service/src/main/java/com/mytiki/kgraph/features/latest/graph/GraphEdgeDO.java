@@ -78,6 +78,7 @@ public class GraphEdgeDO<F extends GraphVertexDO, T extends GraphVertexDO> imple
     public String toString() {
         return "{" +
                 "id='" + id + '\'' +
+                ", collection='" + COLLECTION_NAME + '\'' +
                 ", from='" + from.toString() + '\'' +
                 ", to='" + to.toString() + '\'' +
                 ", qty='" + qty.toString() + '\'' +
