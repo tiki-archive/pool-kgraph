@@ -7,7 +7,9 @@ package com.mytiki.kgraph.features.latest.add;
 
 
 import com.mytiki.common.exception.ApiExceptionFactory;
+import com.mytiki.kgraph.features.latest.graph.GraphEdgeDO;
 import com.mytiki.kgraph.features.latest.graph.GraphService;
+import com.mytiki.kgraph.features.latest.graph.GraphVertexDO;
 import org.springframework.http.HttpStatus;
 
 import java.lang.reflect.InvocationTargetException;
@@ -22,7 +24,7 @@ public class AddService {
 
     public AddAO execute(AddAO body){
         try {
-            graphService.upsert(
+            GraphEdgeDO<? extends GraphVertexDO, ? extends GraphVertexDO> edge = graphService.upsertEdge(
                     body.getFrom().getType(),
                     body.getFrom().getValue(),
                     body.getTo().getType(),
@@ -33,5 +35,4 @@ public class AddService {
             throw ApiExceptionFactory.exception(HttpStatus.UNPROCESSABLE_ENTITY, e.getMessage());
         }
     }
-
 }

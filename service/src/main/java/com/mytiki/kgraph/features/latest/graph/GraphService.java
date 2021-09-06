@@ -19,7 +19,7 @@ public class GraphService {
         this.edgeRepository = edgeRepository;
     }
 
-    public GraphEdgeDO<? extends GraphVertexDO, ? extends GraphVertexDO> upsert(
+    public GraphEdgeDO<? extends GraphVertexDO, ? extends GraphVertexDO> upsertEdge(
             String fromName, String fromValue, String toName, String toValue, String fingerprint)
             throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         GraphVertexDO fromDO = newVertex(fromName);
@@ -33,7 +33,6 @@ public class GraphService {
         return upsertEdge(fromDO, toDO, fingerprint);
     }
 
-    //TODO flexible body params.
     private <T extends GraphVertexDO> T upsertVertex(T vertex, GraphVertexRepository<T> repository) {
         Optional<T> saved;
         try {
@@ -42,7 +41,7 @@ public class GraphService {
             if(ex.getErrorNum() == 1203) saved = Optional.empty();
             else throw ex;
         }
-        saved.ifPresent(v -> vertex.setId(v.getId()));
+        saved.ifPresent(v -> vertex.setId(v.getId())); //TODO flexible body params.
         return repository.save(vertex);
     }
 
