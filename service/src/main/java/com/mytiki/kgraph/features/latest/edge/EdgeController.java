@@ -3,7 +3,7 @@
  * MIT license. See LICENSE file in root directory.
  */
 
-package com.mytiki.kgraph.features.latest.add;
+package com.mytiki.kgraph.features.latest.edge;
 
 import com.mytiki.common.ApiConstants;
 import com.mytiki.common.reply.ApiReplyAO;
@@ -14,18 +14,18 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(value = AddController.PATH_CONTROLLER)
-public class AddController {
-    public static final String PATH_CONTROLLER = ApiConstants.API_LATEST_ROUTE + "add";
+@RequestMapping(value = EdgeController.PATH_CONTROLLER)
+public class EdgeController {
+    public static final String PATH_CONTROLLER = ApiConstants.API_LATEST_ROUTE + "edge";
 
-    private final AddService addService;
+    private final EdgeService edgeService;
 
-    public AddController(AddService addService) {
-        this.addService = addService;
+    public EdgeController(EdgeService addService) {
+        this.edgeService = addService;
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public ApiReplyAO<AddAO> post(@RequestBody AddAO body) {
-        return ApiReplyAOFactory.ok(addService.execute(body));
+    public ApiReplyAO<EdgeAO> post(@RequestBody EdgeAO body) {
+        return ApiReplyAOFactory.ok(edgeService.add(body));
     }
 }

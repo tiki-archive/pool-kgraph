@@ -3,19 +3,19 @@
  * MIT license. See LICENSE file in root directory.
  */
 
-package com.mytiki.kgraph.features.latest.add;
+package com.mytiki.kgraph.features.latest.edge;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class AddAOVertex {
+public class EdgeAOVertex {
     private String type;
     private String value;
 
-    public AddAOVertex() {}
+    public EdgeAOVertex() {}
 
     @JsonCreator
-    public AddAOVertex(
+    public EdgeAOVertex(
             @JsonProperty(required = true) String type,
             @JsonProperty(required = true) String name) {
         this.type = type;

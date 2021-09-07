@@ -3,7 +3,7 @@
  * MIT license. See LICENSE file in root directory.
  */
 
-package com.mytiki.kgraph.features.latest.add;
+package com.mytiki.kgraph.features.latest.edge;
 
 
 import com.mytiki.common.exception.ApiExceptionFactory;
@@ -14,15 +14,15 @@ import org.springframework.http.HttpStatus;
 
 import java.lang.reflect.InvocationTargetException;
 
-public class AddService {
+public class EdgeService {
 
     private final GraphService graphService;
 
-    public AddService(GraphService graphService) {
+    public EdgeService(GraphService graphService) {
         this.graphService = graphService;
     }
 
-    public AddAO execute(AddAO body){
+    public EdgeAO add(EdgeAO body){
         try {
             GraphEdgeDO<? extends GraphVertexDO, ? extends GraphVertexDO> edge = graphService.upsertEdge(
                     body.getFrom().getType(),

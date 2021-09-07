@@ -3,42 +3,42 @@
  * MIT license. See LICENSE file in root directory.
  */
 
-package com.mytiki.kgraph.features.latest.add;
+package com.mytiki.kgraph.features.latest.edge;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class AddAO {
-    private AddAOVertex from;
-    private AddAOVertex to;
+public class EdgeAO {
+    private EdgeAOVertex from;
+    private EdgeAOVertex to;
     private String fingerprint;
 
-    public AddAO() {
+    public EdgeAO() {
     }
 
     @JsonCreator
-    public AddAO(
-            @JsonProperty(required = true) AddAOVertex from,
-            @JsonProperty(required = true) AddAOVertex to,
+    public EdgeAO(
+            @JsonProperty(required = true) EdgeAOVertex from,
+            @JsonProperty(required = true) EdgeAOVertex to,
             @JsonProperty(required = true) String fingerprint) {
         this.from = from;
         this.to = to;
         this.fingerprint = fingerprint;
     }
 
-    public AddAOVertex getFrom() {
+    public EdgeAOVertex getFrom() {
         return from;
     }
 
-    public void setFrom(AddAOVertex from) {
+    public void setFrom(EdgeAOVertex from) {
         this.from = from;
     }
 
-    public AddAOVertex getTo() {
+    public EdgeAOVertex getTo() {
         return to;
     }
 
-    public void setTo(AddAOVertex to) {
+    public void setTo(EdgeAOVertex to) {
         this.to = to;
     }
 
