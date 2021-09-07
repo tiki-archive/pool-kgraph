@@ -7,7 +7,9 @@ package com.mytiki.kgraph.features.latest.graph;
 
 import com.arangodb.ArangoDBException;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.time.ZonedDateTime;
 import java.util.*;
 
 public class GraphService {
@@ -20,28 +22,41 @@ public class GraphService {
     }
 
     public GraphEdgeDO<? extends GraphVertexDO, ? extends GraphVertexDO> upsertEdge(
-            String fromName, String fromValue, String toName, String toValue, String fingerprint)
+            String fromType, String fromValue, String toType, String toValue, String fingerprint)
             throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        GraphVertexDO fromDO = newVertex(fromName);
+        GraphVertexDO fromDO = newVertex(fromType);
         fromDO.setValue(fromValue);
-        fromDO = upsertVertex(fromDO, getRepository(fromName));
+        fromDO = upsertVertex(fromDO);
 
-        GraphVertexDO toDO = newVertex(toName);
+        GraphVertexDO toDO = newVertex(toType);
         toDO.setValue(toValue);
-        toDO = upsertVertex(toDO, getRepository(toName));
+        toDO = upsertVertex(toDO);
 
         return upsertEdge(fromDO, toDO, fingerprint);
     }
 
-    private <T extends GraphVertexDO> T upsertVertex(T vertex, GraphVertexRepository<T> repository) {
+    public <T extends GraphVertexDO> Optional<T> getVertex(String type, String value){
+        GraphVertexRepository<T> repository = getRepository(type);
+        return repository.findByValue(value);
+    }
+
+    public <T extends GraphVertexDO> T upsertVertex(T vertex){
         Optional<T> saved;
+        GraphVertexRepository<T> repository = getRepository(vertex.getCollection());
         try {
-             saved = repository.findByValue(vertex.getValue());
+            saved = repository.findByValue(vertex.getValue());
         }catch (ArangoDBException ex){
             if(ex.getErrorNum() == 1203) saved = Optional.empty();
             else throw ex;
         }
-        saved.ifPresent(v -> vertex.setId(v.getId())); //TODO flexible body params.
+        if(saved.isPresent()){
+            vertex = merge(saved.get(), vertex);
+            vertex.setModified(ZonedDateTime.now());
+        }else{
+            ZonedDateTime now = ZonedDateTime.now();
+            vertex.setCreated(now);
+            vertex.setModified(now);
+        }
         return repository.save(vertex);
     }
 
@@ -54,22 +69,50 @@ public class GraphService {
             Set<String> fingerprintList = edgeDO.getFingerprints();
             fingerprintList.add(fingerprint);
             edgeDO.setFingerprints(fingerprintList);
+            edgeDO.setModified(ZonedDateTime.now());
         } else {
             edgeDO = new GraphEdgeDO<>();
             edgeDO.setFrom(from);
             edgeDO.setTo(to);
             edgeDO.setFingerprints(new HashSet<>(List.of(fingerprint)));
+            ZonedDateTime now = ZonedDateTime.now();
+            edgeDO.setCreated(now);
+            edgeDO.setModified(now);
         }
         return edgeRepository.save(edgeDO);
     }
 
-    private <T extends GraphVertexDO> GraphVertexRepository<T> getRepository(String name){
-        return (GraphVertexRepository<T>) lookup.getRepository(name);
+    @SuppressWarnings("unchecked")
+    private <T extends GraphVertexDO> GraphVertexRepository<T> getRepository(String type){
+        return (GraphVertexRepository<T>) lookup.getRepository(type);
     }
 
-    private <T extends GraphVertexDO> T newVertex(String name)
+    @SuppressWarnings("unchecked")
+    private <T extends GraphVertexDO> T newVertex(String type)
             throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        Class<T> doClass = (Class<T>) lookup.getDOClass(name);
+        Class<T> doClass = (Class<T>) lookup.getDOClass(type);
         return doClass.getConstructor().newInstance();
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T extends GraphVertexDO> T merge(T initial, T update){
+        List<Field> fields = new ArrayList<>();
+        if(initial.getClass().getSuperclass() != null)
+            fields.addAll(Arrays.asList(initial.getClass().getSuperclass().getDeclaredFields()));
+        fields.addAll(Arrays.asList(initial.getClass().getDeclaredFields()));
+        try {
+            T merged = (T) initial.getClass().getDeclaredConstructor().newInstance();
+            for (Field field : fields) {
+                field.setAccessible(true);
+                Object initialField = field.get(initial);
+                Object updateField = (update == null ? null : field.get(update));
+                if(updateField != null) field.set(merged, updateField);
+                else field.set(merged, initialField);
+            }
+            return merged;
+        }
+        catch (IllegalAccessException | InstantiationException | NoSuchMethodException | InvocationTargetException e) {
+            return initial;
+        }
     }
 }

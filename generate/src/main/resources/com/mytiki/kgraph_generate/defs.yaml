@@ -1,0 +1,34 @@
+#
+# Copyright (c) TIKI Inc.
+# MIT license. See LICENSE file in root directory.
+#
+
+vertices:
+  - type: company
+    fields:
+      - name: logo
+        clazz: java.lang.String
+  - type: email
+
+# Supported Classes (https://www.arangodb.com/docs/stable/drivers/spring-data-reference-mapping.html)
+# java.lang.String
+# java.lang.Boolean
+# java.lang.Integer
+# java.lang.Long
+# java.lang.Short
+# java.lang.Double
+# java.lang.Float
+# java.math.BigInteger
+# java.math.BigDecimal
+# java.lang.Number
+# java.lang.Character
+# java.util.UUID
+# java.lang.byte[]
+# java.util.Date
+# java.sql.Date
+# java.sql.Timestamp
+# java.time.Instant
+# java.time.LocalDate
+# java.time.LocalDateTime
+# java.time.OffsetDateTime
+# java.time.ZonedDateTime

@@ -11,6 +11,7 @@ import com.arangodb.springframework.annotation.To;
 import org.springframework.data.annotation.Id;
 
 import java.io.Serializable;
+import java.time.ZonedDateTime;
 import java.util.Set;
 
 @Edge(GraphEdgeDO.COLLECTION_NAME)
@@ -25,6 +26,10 @@ public class GraphEdgeDO<F extends GraphVertexDO, T extends GraphVertexDO> imple
 
     @To
     private T to;
+
+    private ZonedDateTime created;
+
+    private ZonedDateTime modified;
 
     private Set<String> fingerprints;
 
@@ -74,15 +79,33 @@ public class GraphEdgeDO<F extends GraphVertexDO, T extends GraphVertexDO> imple
         this.qty = qty;
     }
 
+    public ZonedDateTime getCreated() {
+        return created;
+    }
+
+    public void setCreated(ZonedDateTime created) {
+        this.created = created;
+    }
+
+    public ZonedDateTime getModified() {
+        return modified;
+    }
+
+    public void setModified(ZonedDateTime modified) {
+        this.modified = modified;
+    }
+
     @Override
     public String toString() {
         return "{" +
                 "id='" + id + '\'' +
                 ", collection='" + COLLECTION_NAME + '\'' +
-                ", from='" + from.toString() + '\'' +
-                ", to='" + to.toString() + '\'' +
-                ", qty='" + qty.toString() + '\'' +
-                ", fingerprints='" + fingerprints.toString() + '\'' +
+                ", from='" + from + '\'' +
+                ", to='" + to + '\'' +
+                ", qty='" + qty + '\'' +
+                ", fingerprints='" + fingerprints + '\'' +
+                ", created='" + created + '\'' +
+                ", modified='" + modified+ '\'' +
                 "}";
     }
 }

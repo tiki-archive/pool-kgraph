@@ -8,13 +8,13 @@ package com.mytiki.kgraph_generate;
 import java.util.List;
 
 public class KGraphDefs {
-    private List<String> vertices;
+    private List<KGraphDefsVertex> vertices;
 
-    public List<String> getVertices() {
+    public List<KGraphDefsVertex> getVertices() {
         return vertices;
     }
 
-    public void setVertices(List<String> vertices) {
+    public void setVertices(List<KGraphDefsVertex> vertices) {
         this.vertices = vertices;
     }
 }

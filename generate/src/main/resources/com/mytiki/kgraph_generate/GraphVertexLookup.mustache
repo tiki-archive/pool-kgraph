@@ -12,36 +12,36 @@ import org.springframework.stereotype.Component;
 @Component
 public class GraphVertexLookup {
 {{#vertices}}
-    private final GraphVertex{{{name_pascal}}}Repository {{{name_camel}}}Repository;
+    private final GraphVertex{{{type_pascal}}}Repository {{{type_camel}}}Repository;
 {{/vertices}}
 
     @Autowired
     public GraphVertexLookup(
 {{#vertices}}
-        GraphVertex{{{name_pascal}}}Repository {{{name_camel}}}Repository{{^last}}, {{/last}}
+        GraphVertex{{{type_pascal}}}Repository {{{type_camel}}}Repository{{^last}}, {{/last}}
 {{/vertices}}
     ){
 {{#vertices}}
-        this.{{{name_camel}}}Repository = {{{name_camel}}}Repository;
+        this.{{{type_camel}}}Repository = {{{type_camel}}}Repository;
 {{/vertices}}
     }
 
-    public Class<? extends GraphVertexDO> getDOClass(String name){
-        switch (name){
+    public Class<? extends GraphVertexDO> getDOClass(String type){
+        switch (type){
 {{#vertices}}
-            case "{{{name_camel}}}":
-                return GraphVertex{{{name_pascal}}}DO.class;
+            case "{{{type_camel}}}":
+                return GraphVertex{{{type_pascal}}}DO.class;
 {{/vertices}}
             default:
                 return null;
         }
     }
 
-    public GraphVertexRepository<? extends GraphVertexDO> getRepository(String name){
-        switch (name){
+    public GraphVertexRepository<? extends GraphVertexDO> getRepository(String type){
+        switch (type){
 {{#vertices}}
-            case "{{{name_camel}}}":
-                return {{{name_camel}}}Repository;
+            case "{{{type_camel}}}":
+                return {{{type_camel}}}Repository;
 {{/vertices}}
             default:
                 return null;

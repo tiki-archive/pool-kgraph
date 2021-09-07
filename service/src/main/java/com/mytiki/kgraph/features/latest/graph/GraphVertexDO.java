@@ -9,12 +9,17 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 
 import java.io.Serializable;
+import java.time.ZonedDateTime;
 
 public abstract class GraphVertexDO implements Serializable {
     @Id
     private String id;
 
     private String value;
+
+    private ZonedDateTime created;
+
+    private ZonedDateTime modified;
 
     @Transient
     private final String collection;
@@ -39,6 +44,22 @@ public abstract class GraphVertexDO implements Serializable {
         this.value = value;
     }
 
+    public ZonedDateTime getCreated() {
+        return created;
+    }
+
+    public ZonedDateTime getModified() {
+        return modified;
+    }
+
+    public void setModified(ZonedDateTime modified) {
+        this.modified = modified;
+    }
+
+    public void setCreated(ZonedDateTime created) {
+        this.created = created;
+    }
+
     public String getCollection() {
         return collection;
     }
@@ -53,6 +74,8 @@ public abstract class GraphVertexDO implements Serializable {
                 "id='" + id + '\'' +
                 ", value='" + value + '\'' +
                 ", collection='" + collection + '\'' +
+                ", created='" + created + '\'' +
+                ", modified='" + modified + '\'' +
                 "}";
     }
 }

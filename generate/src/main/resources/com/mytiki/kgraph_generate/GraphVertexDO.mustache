@@ -5,11 +5,42 @@
 
 package com.mytiki.kgraph.features.latest.graph;
 
+{{#imports}}
+import {{.}};
+{{/imports}}
 import com.arangodb.springframework.annotation.Document;
 
-@Document("{{{name_camel}}}")
-public class GraphVertex{{{name_pascal}}}DO extends GraphVertexDO {
-    public GraphVertex{{{name_pascal}}}DO() {
-        super("{{{name_camel}}}");
+@Document("{{{type_camel}}}")
+public class GraphVertex{{{type_pascal}}}DO extends GraphVertexDO {
+{{#fields}}
+    private {{{type}}} {{{name_camel}}};
+{{/fields}}
+
+    public GraphVertex{{{type_pascal}}}DO() {
+        super("{{{type_camel}}}");
+    }
+{{#fields}}
+
+    public {{{type}}} get{{{name_pascal}}}() {
+        return {{{name_camel}}};
+    }
+
+    public void set{{{name_pascal}}}({{{type}}} {{{name_camel}}}) {
+        this.{{{name_camel}}} = {{{name_camel}}};
+    }
+{{/fields}}
+
+    @Override
+    public String toString() {
+        return "{" +
+                "id='" + getId() + '\'' +
+                ", value='" + getValue() + '\'' +
+                ", collection='" + getCollection() + '\'' +
+                ", created='" + getCreated() + '\'' +
+                ", modified='" + getModified() + '\'' +
+{{#fields}}
+                ", {{{name_camel}}}='" + {{{name_camel}}} + '\'' +
+{{/fields}}
+                "}";
     }
 }

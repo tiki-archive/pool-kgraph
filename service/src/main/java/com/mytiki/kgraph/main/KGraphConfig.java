@@ -22,8 +22,7 @@ import java.util.TimeZone;
         UtilitiesConfig.class,
         ConfigArangodb.class,
         ConfigFeatures.class,
-        ConfigSecurity.class,
-        ConfigGraphql.class
+        ConfigSecurity.class
 })
 @EnableScheduling
 public class KGraphConfig {

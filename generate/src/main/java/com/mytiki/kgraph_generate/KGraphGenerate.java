@@ -6,17 +6,17 @@
 package com.mytiki.kgraph_generate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
 import com.github.mustachejava.MustacheFactory;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class KGraphGenerate {
     public static void main(final String... args) {
@@ -26,13 +26,28 @@ public class KGraphGenerate {
         Mustache lookupMustache = mustacheFactory.compile("com/mytiki/kgraph_generate/GraphVertexLookup.mustache");
         try {
             KGraphDefs defs = load();
-            Map<String, List<Map<String,String>>> lookupPlaceholders = new HashMap<>(1);
-            List<Map<String,String>> lookupList = new ArrayList<>(defs.getVertices().size());
+            Map<String, List<Map<String,Object>>> lookupPlaceholders = new HashMap<>(1);
+            List<Map<String,Object>> lookupList = new ArrayList<>(defs.getVertices().size());
             defs.getVertices().forEach(vertex -> {
-                Map<String, String> placeholders = new HashMap<>(2);
-                String vertexPascal = camelToPascal(vertex);
-                placeholders.put("name_pascal", vertexPascal);
-                placeholders.put("name_camel", vertex);
+                Map<String, Object> placeholders = new HashMap<>(3);
+                String vertexPascal = camelToPascal(vertex.getType());
+                placeholders.put("type_pascal", vertexPascal);
+                placeholders.put("type_camel", vertex.getType());
+                if(vertex.getFields() != null) {
+                    List<Map<String, String>> fields = new ArrayList<>(vertex.getFields().size());
+                    Set<String> imports = new HashSet<>();
+                    vertex.getFields().forEach(m -> {
+                        HashMap<String, String> map = new HashMap<>(3);
+                        map.put("name_pascal", camelToPascal(m.getName()));
+                        map.put("name_camel", m.getName());
+                        map.put("clazz", m.getClazz());
+                        map.put("type", m.getClazz().substring(m.getClazz().lastIndexOf(".")+1));
+                        fields.add(map);
+                        imports.add(m.getClazz());
+                    });
+                    placeholders.put("fields", fields);
+                    placeholders.put("imports", imports);
+                }
                 lookupList.add(placeholders);
                 try {
                     String doString = render(doMustache, placeholders);
@@ -53,11 +68,12 @@ public class KGraphGenerate {
     }
 
     private static KGraphDefs load() throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+        mapper.findAndRegisterModules();
         InputStream is = Thread
                 .currentThread()
                 .getContextClassLoader()
-                .getResourceAsStream("com/mytiki/kgraph_generate/defs.json");
+                .getResourceAsStream("com/mytiki/kgraph_generate/defs.yaml");
         return mapper.readValue(is, KGraphDefs.class);
     }
 
