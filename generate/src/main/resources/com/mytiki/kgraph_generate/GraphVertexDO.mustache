@@ -13,7 +13,7 @@ import com.arangodb.springframework.annotation.Document;
 @Document("{{{type_camel}}}")
 public class GraphVertex{{{type_pascal}}}DO extends GraphVertexDO {
 {{#fields}}
-    private {{{type}}} {{{name_camel}}};
+    private {{{type_java}}} {{{name_camel}}};
 {{/fields}}
 
     public GraphVertex{{{type_pascal}}}DO() {
@@ -21,11 +21,11 @@ public class GraphVertex{{{type_pascal}}}DO extends GraphVertexDO {
     }
 {{#fields}}
 
-    public {{{type}}} get{{{name_pascal}}}() {
+    public {{{type_java}}} get{{{name_pascal}}}() {
         return {{{name_camel}}};
     }
 
-    public void set{{{name_pascal}}}({{{type}}} {{{name_camel}}}) {
+    public void set{{{name_pascal}}}({{{type_java}}} {{{name_camel}}}) {
         this.{{{name_camel}}} = {{{name_camel}}};
     }
 {{/fields}}

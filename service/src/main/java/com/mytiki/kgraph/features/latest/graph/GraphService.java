@@ -60,6 +60,10 @@ public class GraphService {
         return repository.save(vertex);
     }
 
+    public String getSchema() {
+        return GraphVertexLookup.schema;
+    }
+
     private <F extends GraphVertexDO, T extends GraphVertexDO> GraphEdgeDO<F,T> upsertEdge(
             F from, T to, String fingerprint){
         Optional<GraphEdgeDO<F,T>> saved = edgeRepository.findByVertices(from.getRawId(), to.getRawId());

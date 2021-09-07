@@ -41,7 +41,8 @@ public class KGraphGenerate {
                         map.put("name_pascal", camelToPascal(m.getName()));
                         map.put("name_camel", m.getName());
                         map.put("clazz", m.getClazz());
-                        map.put("type", m.getClazz().substring(m.getClazz().lastIndexOf(".")+1));
+                        map.put("type_java", m.getClazz().substring(m.getClazz().lastIndexOf(".")+1));
+                        map.put("type_json", jsonType(m.getClazz()));
                         fields.add(map);
                         imports.add(m.getClazz());
                     });
@@ -93,5 +94,35 @@ public class KGraphGenerate {
 
     private static String camelToPascal(String camel){
       return camel.substring(0,1).toUpperCase() + camel.substring(1);
+    }
+
+    private static String jsonType(String clazz){
+        switch (clazz){
+            case "java.lang.Boolean":
+                return "boolean";
+            case "java.lang.Integer":
+            case "java.lang.Long":
+            case "java.lang.Short":
+            case "java.lang.Double":
+            case "java.lang.Float":
+            case "java.lang.Number":
+            case "java.math.BigDecimal":
+            case "java.math.BigInteger":
+                return "number";
+            case "java.lang.String":
+            case "java.time.OffsetDateTime":
+            case "java.time.LocalDateTime":
+            case "java.time.LocalDate":
+            case "java.time.Instant":
+            case "java.sql.Timestamp":
+            case "java.sql.Date":
+            case "java.util.Date":
+            case "java.lang.byte[]":
+            case "java.util.UUID":
+            case "java.lang.Character":
+            case "java.time.ZonedDateTime":
+            default:
+                return "string";
+        }
     }
 }
