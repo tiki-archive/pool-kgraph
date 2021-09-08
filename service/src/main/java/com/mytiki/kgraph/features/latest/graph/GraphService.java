@@ -64,8 +64,13 @@ public class GraphService {
         return GraphVertexLookup.schema;
     }
 
-    private <F extends GraphVertexDO, T extends GraphVertexDO> GraphEdgeDO<F,T> upsertEdge(
-            F from, T to, String fingerprint){
+    public List<GraphEdgeDO<? extends GraphVertexDO, ? extends GraphVertexDO>>
+    findByFingerprint(String fingerprint){
+        return edgeRepository.findByFingerprintsContains(fingerprint);
+    }
+
+    private <F extends GraphVertexDO, T extends GraphVertexDO>
+    GraphEdgeDO<F,T> upsertEdge(F from, T to, String fingerprint){
         Optional<GraphEdgeDO<F,T>> saved = edgeRepository.findByVertices(from.getRawId(), to.getRawId());
         GraphEdgeDO<F,T> edgeDO;
         if (saved.isPresent()) {

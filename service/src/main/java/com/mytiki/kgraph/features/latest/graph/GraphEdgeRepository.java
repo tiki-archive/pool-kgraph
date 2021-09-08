@@ -9,11 +9,16 @@ import com.arangodb.springframework.annotation.Query;
 import com.arangodb.springframework.repository.ArangoRepository;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface GraphEdgeRepository extends
         ArangoRepository<GraphEdgeDO<? extends GraphVertexDO, ? extends GraphVertexDO>, String> {
     @Query("FOR e IN #collection FILTER e._from == @from AND e._to == @to RETURN e")
     <F extends GraphVertexDO, T extends GraphVertexDO> Optional<GraphEdgeDO<F,T>>
     findByVertices(@Param("from") String from, @Param("to") String to);
+
+    List<GraphEdgeDO<? extends GraphVertexDO, ? extends GraphVertexDO>> findByFingerprintsContains(String fingerprint);
 }
