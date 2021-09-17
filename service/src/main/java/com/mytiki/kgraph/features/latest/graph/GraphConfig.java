@@ -42,8 +42,9 @@ public class GraphConfig {
     @Bean
     public GraphService graphService(
             @Autowired GraphVertexLookup graphVertexLookup,
-            @Autowired GraphEdgeRepository graphEdgeRepository){
-        return new GraphService(graphVertexLookup, graphEdgeRepository);
+            @Autowired GraphEdgeRepository graphEdgeRepository,
+            @Autowired ConfigProperties configProperties){
+        return new GraphService(graphVertexLookup, graphEdgeRepository, configProperties);
     }
 
     @PostConstruct
