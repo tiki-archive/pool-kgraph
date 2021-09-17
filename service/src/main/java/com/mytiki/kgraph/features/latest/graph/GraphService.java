@@ -6,6 +6,7 @@
 package com.mytiki.kgraph.features.latest.graph;
 
 import com.arangodb.ArangoDBException;
+import com.mytiki.kgraph.config.ConfigProperties;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -15,10 +16,14 @@ import java.util.*;
 public class GraphService {
     private final GraphVertexLookup lookup;
     private final GraphEdgeRepository edgeRepository;
+    private final ConfigProperties configProperties;
 
-    public GraphService(GraphVertexLookup lookup, GraphEdgeRepository edgeRepository) {
+    public GraphService(GraphVertexLookup lookup,
+                        GraphEdgeRepository edgeRepository,
+                        ConfigProperties configProperties) {
         this.lookup = lookup;
         this.edgeRepository = edgeRepository;
+        this.configProperties = configProperties;
     }
 
     public GraphEdgeDO<? extends GraphVertexDO, ? extends GraphVertexDO> upsertEdge(
@@ -73,7 +78,7 @@ public class GraphService {
     traverse(String type, String value, Integer depth){
         Optional<GraphVertexDO> start = getVertex(type, value);
         if(start.isPresent()) {
-            return edgeRepository.traverse(start.get().getRawId(), depth);
+            return edgeRepository.traverse(start.get().getRawId(), depth, configProperties.getEpsilon());
         }else
             return List.of();
     }
@@ -83,7 +88,8 @@ public class GraphService {
         Optional<GraphVertexDO> start = getVertex(startType, startValue);
         Optional<GraphVertexDO> end = getVertex(endType, endValue);
         if(start.isPresent() && end.isPresent()) {
-            return edgeRepository.shortestPath(start.get().getRawId(), end.get().getRawId());
+            return edgeRepository.shortestPath(
+                    start.get().getRawId(), end.get().getRawId(), configProperties.getEpsilon());
         }else
             return List.of();
     }

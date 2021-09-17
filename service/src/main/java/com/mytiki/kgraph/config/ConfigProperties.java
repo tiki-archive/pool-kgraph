@@ -21,6 +21,9 @@ public class ConfigProperties {
     @Value("${com.mytiki.kgraph.graph.name}")
     private String graphName;
 
+    @Value("${com.mytiki.kgraph.epsilon}")
+    private Integer epsilon;
+
     public String getSpringProfilesActive() {
         return springProfilesActive;
     }
@@ -51,5 +54,13 @@ public class ConfigProperties {
 
     public void setGraphName(String graphName) {
         this.graphName = graphName;
+    }
+
+    public Integer getEpsilon() {
+        return epsilon;
+    }
+
+    public void setEpsilon(Integer epsilon) {
+        this.epsilon = epsilon;
     }
 }
