@@ -70,10 +70,22 @@ public class GraphService {
     }
 
     public List<GraphEdgeDO<? extends GraphVertexDO, ? extends GraphVertexDO>>
-    search(){
-        List<GraphEdgeDO<? extends GraphVertexDO, ? extends GraphVertexDO>> edges =
-                edgeRepository.shortestPath("company/624542", "email/625289");
-        return edges;
+    traverse(String type, String value, Integer depth){
+        Optional<GraphVertexDO> start = getVertex(type, value);
+        if(start.isPresent()) {
+            return edgeRepository.traverse(start.get().getRawId(), depth);
+        }else
+            return List.of();
+    }
+
+    public List<GraphEdgeDO<? extends GraphVertexDO, ? extends GraphVertexDO>>
+    shortestPath(String startType, String startValue, String endType, String endValue){
+        Optional<GraphVertexDO> start = getVertex(startType, startValue);
+        Optional<GraphVertexDO> end = getVertex(endType, endValue);
+        if(start.isPresent() && end.isPresent()) {
+            return edgeRepository.shortestPath(start.get().getRawId(), end.get().getRawId());
+        }else
+            return List.of();
     }
 
     private <F extends GraphVertexDO, T extends GraphVertexDO>

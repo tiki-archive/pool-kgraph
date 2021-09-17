@@ -5,7 +5,12 @@
 
 package com.mytiki.kgraph.features.latest.search;
 
+import com.mytiki.kgraph.features.latest.graph.GraphEdgeDO;
 import com.mytiki.kgraph.features.latest.graph.GraphService;
+import com.mytiki.kgraph.features.latest.graph.GraphVertexDO;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class SearchService {
 
@@ -27,7 +32,23 @@ public class SearchService {
         this.graphService = graphService;
     }
 
-    void search(){
-        graphService.search();
+    List<SearchAO> search(SearchAOVertex start, SearchAOVertex end, Integer depth){
+        List<GraphEdgeDO<? extends GraphVertexDO, ? extends GraphVertexDO>> edges;
+        if(end != null)
+            edges = graphService.shortestPath(start.getType(), start.getType(), end.getType(), end.getValue());
+        else
+            edges = graphService.traverse(start.getType(), start.getValue(), depth);
+        return edges.stream().map(e -> {
+            SearchAO ao = new SearchAO();
+            SearchAOVertex aoFrom = new SearchAOVertex();
+            aoFrom.setType(e.getFrom().getCollection());
+            aoFrom.setValue(e.getFrom().getValue());
+            ao.setFrom(aoFrom);
+            SearchAOVertex aoTo = new SearchAOVertex();
+            aoTo.setType(e.getTo().getCollection());
+            aoTo.setValue(e.getTo().getValue());
+            ao.setTo(aoTo);
+            return ao;
+        }).collect(Collectors.toList());
     }
 }
