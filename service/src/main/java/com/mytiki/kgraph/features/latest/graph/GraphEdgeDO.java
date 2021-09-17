@@ -33,7 +33,7 @@ public class GraphEdgeDO<F extends GraphVertexDO, T extends GraphVertexDO> imple
 
     private Set<String> fingerprints;
 
-    private Integer qty;
+    private Double weight;
 
     public GraphEdgeDO() {}
 
@@ -67,16 +67,7 @@ public class GraphEdgeDO<F extends GraphVertexDO, T extends GraphVertexDO> imple
 
     public void setFingerprints(Set<String> fingerprints) {
         this.fingerprints = fingerprints;
-        if(fingerprints != null)
-            this.qty = fingerprints.size();
-    }
-
-    public Integer getQty() {
-        return qty;
-    }
-
-    public void setQty(Integer qty) {
-        this.qty = qty;
+        setWeight(fingerprints != null ? 1.0/fingerprints.size() : null);
     }
 
     public ZonedDateTime getCreated() {
@@ -95,6 +86,14 @@ public class GraphEdgeDO<F extends GraphVertexDO, T extends GraphVertexDO> imple
         this.modified = modified;
     }
 
+    public Double getWeight() {
+        return weight;
+    }
+
+    public void setWeight(Double weight) {
+        this.weight = weight;
+    }
+
     @Override
     public String toString() {
         return "{" +
@@ -102,7 +101,7 @@ public class GraphEdgeDO<F extends GraphVertexDO, T extends GraphVertexDO> imple
                 ", collection='" + COLLECTION_NAME + '\'' +
                 ", from='" + from + '\'' +
                 ", to='" + to + '\'' +
-                ", qty='" + qty + '\'' +
+                ", weight='" + weight + '\'' +
                 ", fingerprints='" + fingerprints + '\'' +
                 ", created='" + created + '\'' +
                 ", modified='" + modified+ '\'' +

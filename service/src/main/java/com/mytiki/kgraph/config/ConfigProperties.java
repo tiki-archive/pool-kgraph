@@ -18,6 +18,9 @@ public class ConfigProperties {
     @Value("${com.mytiki.kgraph.db.name}")
     private String dbName;
 
+    @Value("${com.mytiki.kgraph.graph.name}")
+    private String graphName;
+
     public String getSpringProfilesActive() {
         return springProfilesActive;
     }
@@ -40,5 +43,13 @@ public class ConfigProperties {
 
     public void setDbName(String dbName) {
         this.dbName = dbName;
+    }
+
+    public String getGraphName() {
+        return graphName;
+    }
+
+    public void setGraphName(String graphName) {
+        this.graphName = graphName;
     }
 }

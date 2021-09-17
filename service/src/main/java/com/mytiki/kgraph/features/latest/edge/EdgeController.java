@@ -20,8 +20,8 @@ public class EdgeController {
 
     private final EdgeService edgeService;
 
-    public EdgeController(EdgeService addService) {
-        this.edgeService = addService;
+    public EdgeController(EdgeService edgeService) {
+        this.edgeService = edgeService;
     }
 
     @RequestMapping(method = RequestMethod.POST)

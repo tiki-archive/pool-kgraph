@@ -22,9 +22,6 @@ public class FingerprintService {
         this.objectMapper = objectMapper;
     }
 
-    //find(list<strings>)
-    //return List<Edge>
-    //edge, from = map of vertex, remove vertex
     public FingerprintAORsp find(FingerprintAOReq req){
         Map<String, Set<String>> edgeFpMap = new HashMap<>();
         Map<String, GraphEdgeDO<? extends GraphVertexDO, ? extends GraphVertexDO>> edgeDOMap = new HashMap<>();

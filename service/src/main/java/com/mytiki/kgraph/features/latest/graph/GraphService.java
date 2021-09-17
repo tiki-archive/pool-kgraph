@@ -61,12 +61,19 @@ public class GraphService {
     }
 
     public String getSchema() {
-        return GraphVertexLookup.schema;
+        return lookup.getSchema();
     }
 
     public List<GraphEdgeDO<? extends GraphVertexDO, ? extends GraphVertexDO>>
     findByFingerprint(String fingerprint){
         return edgeRepository.findByFingerprintsContains(fingerprint);
+    }
+
+    public List<GraphEdgeDO<? extends GraphVertexDO, ? extends GraphVertexDO>>
+    search(){
+        List<GraphEdgeDO<? extends GraphVertexDO, ? extends GraphVertexDO>> edges =
+                edgeRepository.shortestPath("company/624542", "email/625289");
+        return edges;
     }
 
     private <F extends GraphVertexDO, T extends GraphVertexDO>

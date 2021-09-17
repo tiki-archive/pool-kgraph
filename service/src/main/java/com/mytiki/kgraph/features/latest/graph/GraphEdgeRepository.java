@@ -21,4 +21,10 @@ public interface GraphEdgeRepository extends
     findByVertices(@Param("from") String from, @Param("to") String to);
 
     List<GraphEdgeDO<? extends GraphVertexDO, ? extends GraphVertexDO>> findByFingerprintsContains(String fingerprint);
+
+    @Query("FOR v,e IN 1..@depth ANY @start GRAPH kgraph RETURN e")
+    List<GraphEdgeDO<? extends GraphVertexDO, ? extends GraphVertexDO>> traverse(String start, int depth);
+
+    @Query("FOR v,e IN ANY SHORTEST_PATH @start TO @end GRAPH kgraph OPTIONS {weightAttribute: 'weight'} FILTER e != null RETURN e")
+    List<GraphEdgeDO<? extends GraphVertexDO, ? extends GraphVertexDO>> shortestPath(String start, String end);
 }

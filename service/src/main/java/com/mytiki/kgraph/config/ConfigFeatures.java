@@ -8,6 +8,7 @@ package com.mytiki.kgraph.config;
 import com.mytiki.kgraph.features.latest.edge.EdgeConfig;
 import com.mytiki.kgraph.features.latest.fingerprint.FingerprintConfig;
 import com.mytiki.kgraph.features.latest.graph.GraphConfig;
+import com.mytiki.kgraph.features.latest.search.SearchConfig;
 import com.mytiki.kgraph.features.latest.vertex.VertexConfig;
 import org.springframework.context.annotation.Import;
 
@@ -15,6 +16,7 @@ import org.springframework.context.annotation.Import;
         EdgeConfig.class,
         GraphConfig.class,
         VertexConfig.class,
-        FingerprintConfig.class
+        FingerprintConfig.class,
+        SearchConfig.class
 })
 public class ConfigFeatures {}

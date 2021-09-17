@@ -17,9 +17,9 @@ public class EdgeAOVertex {
     @JsonCreator
     public EdgeAOVertex(
             @JsonProperty(required = true) String type,
-            @JsonProperty(required = true) String name) {
+            @JsonProperty(required = true) String value) {
         this.type = type;
-        this.value = name;
+        this.value = value;
     }
 
     public String getType() {

@@ -9,10 +9,10 @@ import com.arangodb.springframework.repository.ArangoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import java.util.Set;
+import java.util.List;
 
 @Component
 public class GraphVertexLookup {
-    public static final String schema = "[{{#vertices}}{\"type\": \"{{type_camel}}\",\"fields\":[{\"name\":\"value\",\"dataType\":\"string\"}{{#fields}},{\"name\":\"{{name_camel}}\",\"dataType\":\"{{type_json}}\"}{{/fields}}]}{{^last}},{{/last}}{{/vertices}}]";
 {{#vertices}}
     private final GraphVertex{{{type_pascal}}}Repository {{{type_camel}}}Repository;
 {{/vertices}}
@@ -49,4 +49,13 @@ public class GraphVertexLookup {
                 return null;
         }
     }
+
+    public String getSchema(){
+        return "[{{#vertices}}{\"type\": \"{{type_camel}}\",\"fields\":[{\"name\":\"value\",\"dataType\":\"string\"}{{#fields}},{\"name\":\"{{name_camel}}\",\"dataType\":\"{{type_json}}\"}{{/fields}}]}{{^last}},{{/last}}{{/vertices}}]";
+    }
+{{=<% %>=}}
+    public String[] getVertices(){
+    return new String[]{<%#vertices%>"<%type_camel%>"<%^last%>,<%/last%><%/vertices%>};
+    }
+<%={{ }}=%>
 }
