@@ -102,7 +102,7 @@ public class ConfigSecurity extends WebSecurityConfigurerAdapter {
                                 HttpMethod.GET, ApiConstants.HEALTH_ROUTE
                         ).permitAll()
                         .antMatchers(
-                                "**"
+                                HttpMethod.POST, ApiConstants.API_LATEST_ROUTE + "big-picture"
                         ).permitAll()
                         .anyRequest()
                         .authenticated()
