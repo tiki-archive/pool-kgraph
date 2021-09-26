@@ -10,22 +10,23 @@ import {{.}};
 {{/imports}}
 import com.arangodb.springframework.annotation.Document;
 
-@Document("{{{type_camel}}}")
+@Document(GraphVertex{{{type_pascal}}}DO.COLLECTION)
 public class GraphVertex{{{type_pascal}}}DO extends GraphVertexDO {
+    public static final String COLLECTION = "{{{type_camel}}}";
 {{#fields}}
     private {{{type_java}}} {{{name_camel}}};
 {{/fields}}
 
     public GraphVertex{{{type_pascal}}}DO() {
-        super("{{{type_camel}}}");
+        super(COLLECTION);
     }
 {{#fields}}
 
-    public {{{type_java}}} get{{{name_pascal}}}() {
+    public {{{type_java}}}{{#collection_java}}<{{{.}}}>{{/collection_java}} get{{{name_pascal}}}() {
         return {{{name_camel}}};
     }
 
-    public void set{{{name_pascal}}}({{{type_java}}} {{{name_camel}}}) {
+    public void set{{{name_pascal}}}({{{type_java}}}{{#collection_java}}<{{{.}}}>{{/collection_java}} {{{name_camel}}}) {
         this.{{{name_camel}}} = {{{name_camel}}};
     }
 {{/fields}}

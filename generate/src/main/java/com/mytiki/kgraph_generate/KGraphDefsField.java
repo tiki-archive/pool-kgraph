@@ -8,6 +8,7 @@ package com.mytiki.kgraph_generate;
 public class KGraphDefsField {
    private String name;
    private String clazz;
+   private String collection;
 
    public String getName() {
       return name;
@@ -23,5 +24,13 @@ public class KGraphDefsField {
 
    public void setClazz(String clazz) {
       this.clazz = clazz;
+   }
+
+   public String getCollection() {
+      return collection;
+   }
+
+   public void setCollection(String collection) {
+      this.collection = collection;
    }
 }

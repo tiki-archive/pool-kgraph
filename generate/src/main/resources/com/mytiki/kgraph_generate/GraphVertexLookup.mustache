@@ -51,7 +51,7 @@ public class GraphVertexLookup {
     }
 
     public String getSchema(){
-        return "[{{#vertices}}{\"type\": \"{{type_camel}}\",\"fields\":[{\"name\":\"value\",\"dataType\":\"string\"}{{#fields}},{\"name\":\"{{name_camel}}\",\"dataType\":\"{{type_json}}\"}{{/fields}}]}{{^last}},{{/last}}{{/vertices}}]";
+        return "[{{#vertices}}{\"type\": \"{{type_camel}}\",\"fields\":[{\"name\":\"value\",\"dataType\":\"string\"}{{#fields}},{\"name\":\"{{name_camel}}\",\"dataType\":\"{{type_json}}{{#collection_json}}[{{{.}}}]{{/collection_json}}\"}{{/fields}}]}{{^last}},{{/last}}{{/vertices}}]";
     }
 {{=<% %>=}}
     public String[] getVertices(){

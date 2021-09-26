@@ -43,6 +43,10 @@ public class KGraphGenerate {
                         map.put("clazz", m.getClazz());
                         map.put("type_java", m.getClazz().substring(m.getClazz().lastIndexOf(".")+1));
                         map.put("type_json", jsonType(m.getClazz()));
+                        if(m.getCollection() != null) {
+                            map.put("collection_java", m.getCollection().substring(m.getClazz().lastIndexOf(".") + 1));
+                            map.put("collection_json", jsonType(m.getCollection()));
+                        }
                         fields.add(map);
                         imports.add(m.getClazz());
                     });
@@ -98,6 +102,9 @@ public class KGraphGenerate {
 
     private static String jsonType(String clazz){
         switch (clazz){
+            case "java.util.List":
+            case "java.util.Set":
+                return "list";
             case "java.lang.Boolean":
                 return "boolean";
             case "java.lang.Integer":

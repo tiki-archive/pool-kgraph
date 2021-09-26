@@ -140,8 +140,10 @@ public class GraphService {
                 field.setAccessible(true);
                 Object initialField = field.get(initial);
                 Object updateField = (update == null ? null : field.get(update));
-                if(updateField != null) field.set(merged, updateField);
-                else field.set(merged, initialField);
+                if(!field.getName().equals("collection") && !field.getName().equals("COLLECTION")) {
+                    if (updateField != null) field.set(merged, updateField);
+                    else field.set(merged, initialField);
+                }
             }
             return merged;
         }

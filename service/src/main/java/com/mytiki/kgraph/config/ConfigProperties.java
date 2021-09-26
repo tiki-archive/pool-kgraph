@@ -24,6 +24,12 @@ public class ConfigProperties {
     @Value("${com.mytiki.kgraph.epsilon}")
     private Integer epsilon;
 
+    @Value("${com.mytiki.kgraph.api_key.hibp}")
+    private String apiKeyHibp;
+
+    @Value("${com.mytiki.kgraph.api_key.big_picture}")
+    private String apiKeyBigPicture;
+
     public String getSpringProfilesActive() {
         return springProfilesActive;
     }
@@ -62,5 +68,21 @@ public class ConfigProperties {
 
     public void setEpsilon(Integer epsilon) {
         this.epsilon = epsilon;
+    }
+
+    public String getApiKeyHibp() {
+        return apiKeyHibp;
+    }
+
+    public void setApiKeyHibp(String apiKeyHibp) {
+        this.apiKeyHibp = apiKeyHibp;
+    }
+
+    public String getApiKeyBigPicture() {
+        return apiKeyBigPicture;
+    }
+
+    public void setApiKeyBigPicture(String apiKeyBigPicture) {
+        this.apiKeyBigPicture = apiKeyBigPicture;
     }
 }

@@ -6,9 +6,61 @@
 vertices:
   - type: company
     fields:
-      - name: logo
+    - name: name
+      clazz: java.lang.String
+    - name: description
+      clazz: java.lang.String
+    - name: logo
+      clazz: java.lang.String
+    - name: url
+      clazz: java.lang.String
+    - name: address
+      clazz: java.lang.String
+    - name: phone
+      clazz: java.lang.String
+    - name: sector
+      clazz: java.lang.String
+    - name: industry
+      clazz: java.lang.String
+    - name: subIndustry
+      clazz: java.lang.String
+    - name: tags
+      clazz: java.util.List
+      collection: java.lang.String
+    - name: facebook
+      clazz: java.lang.String
+    - name: twitter
+      clazz: java.lang.String
+    - name: linkedin
+      clazz: java.lang.String
+    - name: sensitivityScore
+      clazz: java.math.BigDecimal
+    - name: cached
+      clazz: java.time.ZonedDateTime
+  - type: dataBreach
+    fields:
+      - name: domain
         clazz: java.lang.String
-  - type: email
+      - name: breached
+        clazz: java.time.ZonedDateTime
+      - name: modified
+        clazz: java.time.ZonedDateTime
+      - name: pwnCount
+        clazz: java.lang.Integer
+      - name: pwnScore
+        clazz: java.math.BigDecimal
+      - name: types
+        clazz: java.util.List
+        collection: java.lang.String
+      - name: typeScore
+        clazz: java.math.BigDecimal
+      - name: classes
+        clazz: java.util.List
+        collection: java.lang.String
+      - name: classScore
+        clazz: java.math.BigDecimal
+      - name: comboScore
+        clazz: java.math.BigDecimal
 
 # Supported Classes (https://www.arangodb.com/docs/stable/drivers/spring-data-reference-mapping.html)
 # java.lang.String
