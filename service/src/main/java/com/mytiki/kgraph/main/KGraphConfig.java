@@ -5,9 +5,12 @@
 
 package com.mytiki.kgraph.main;
 
-import com.mytiki.common.exception.ApiExceptionHandlerDefault;
 import com.mytiki.common.reply.ApiReplyHandlerDefault;
-import com.mytiki.kgraph.config.*;
+import com.mytiki.kgraph.config.ConfigArangodb;
+import com.mytiki.kgraph.config.ConfigFeatures;
+import com.mytiki.kgraph.config.ConfigProperties;
+import com.mytiki.kgraph.config.ConfigSecurity;
+import com.mytiki.kgraph.utilities.ApiExceptionHandler;
 import com.mytiki.kgraph.utilities.UtilitiesConfig;
 import org.springframework.context.annotation.Import;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -17,7 +20,7 @@ import java.util.TimeZone;
 
 @Import({
         ConfigProperties.class,
-        ApiExceptionHandlerDefault.class,
+        ApiExceptionHandler.class,
         ApiReplyHandlerDefault.class,
         UtilitiesConfig.class,
         ConfigArangodb.class,

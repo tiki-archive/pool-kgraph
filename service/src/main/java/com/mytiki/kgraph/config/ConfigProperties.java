@@ -12,8 +12,11 @@ public class ConfigProperties {
     @Value("${spring.profiles.active:}")
     private String springProfilesActive;
 
-    @Value("${com.mytiki.kgraph.jwt.public_key}")
-    private String jwtPublicKey;
+    @Value("${com.mytiki.kgraph.jwt.bouncer.public_key}")
+    private String jwtBouncerPublicKey;
+
+    @Value("${com.mytiki.kgraph.jwt.customer.public_key}")
+    private String jwtCustomerPublicKey;
 
     @Value("${com.mytiki.kgraph.db.name}")
     private String dbName;
@@ -38,12 +41,20 @@ public class ConfigProperties {
         this.springProfilesActive = springProfilesActive;
     }
 
-    public String getJwtPublicKey() {
-        return jwtPublicKey;
+    public String getJwtBouncerPublicKey() {
+        return jwtBouncerPublicKey;
     }
 
-    public void setJwtPublicKey(String jwtPublicKey) {
-        this.jwtPublicKey = jwtPublicKey;
+    public void setJwtBouncerPublicKey(String jwtBouncerPublicKey) {
+        this.jwtBouncerPublicKey = jwtBouncerPublicKey;
+    }
+
+    public String getJwtCustomerPublicKey() {
+        return jwtCustomerPublicKey;
+    }
+
+    public void setJwtCustomerPublicKey(String jwtCustomerPublicKey) {
+        this.jwtCustomerPublicKey = jwtCustomerPublicKey;
     }
 
     public String getDbName() {

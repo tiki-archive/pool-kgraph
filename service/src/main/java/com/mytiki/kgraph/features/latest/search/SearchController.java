@@ -8,11 +8,13 @@ package com.mytiki.kgraph.features.latest.search;
 import com.mytiki.common.ApiConstants;
 import com.mytiki.common.reply.ApiReplyAO;
 import com.mytiki.common.reply.ApiReplyAOFactory;
+import com.mytiki.kgraph.utilities.Constants;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.security.RolesAllowed;
 import java.util.List;
 
 @RestController
@@ -26,6 +28,7 @@ public class SearchController {
         this.searchService = searchService;
     }
 
+    @RolesAllowed(Constants.ROLE_CUSTOMER)
     @RequestMapping(method = RequestMethod.GET)
     public ApiReplyAO<List<SearchAO>> get(
             @RequestParam SearchAOVertex start,
