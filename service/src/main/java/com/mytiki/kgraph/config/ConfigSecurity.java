@@ -13,6 +13,7 @@ import com.nimbusds.jwt.proc.DefaultJWTProcessor;
 import com.nimbusds.jwt.proc.JWTProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -57,20 +58,22 @@ public class ConfigSecurity extends WebSecurityConfigurerAdapter {
 
     private static final String CONTENT_SECURITY_POLICY = "default-src" + "' self'";
 
+    @Value("${com.mytiki.kgraph.jwt.bouncer.public_key}")
+    private String jwtBouncerPublicKey;
+
+    @Value("${com.mytiki.kgraph.jwt.customer.public_key}")
+    private String jwtCustomerPublicKey;
+
     private final AccessDeniedHandler accessDeniedHandler;
     private final AuthenticationEntryPoint authEntryPointImplException;
-    private final ConfigProperties properties;
 
     public ConfigSecurity(
             @Autowired AccessDeniedHandler accessDeniedHandler,
             @Autowired @Qualifier(value = "authEntryPointImplException")
-                    AuthenticationEntryPoint authEntryPointImplException,
-            @Autowired ConfigProperties properties
-    ) {
+                    AuthenticationEntryPoint authEntryPointImplException) {
         super(true);
         this.accessDeniedHandler = accessDeniedHandler;
         this.authEntryPointImplException = authEntryPointImplException;
-        this.properties = properties;
     }
 
     @Override
@@ -133,12 +136,12 @@ public class ConfigSecurity extends WebSecurityConfigurerAdapter {
             DefaultJWTProcessor<SecurityContext> processor = new DefaultJWTProcessor<>();
             EncodedKeySpec bouncerKeySpec = new X509EncodedKeySpec(Base64
                     .getDecoder()
-                    .decode(properties.getJwtBouncerPublicKey()));
+                    .decode(jwtBouncerPublicKey));
             PublicKey bouncerPublicKey = KeyFactory
                     .getInstance("EC")
                     .generatePublic(bouncerKeySpec);
             InputStream customerX5cStream = new ByteArrayInputStream(
-                    Base64.getDecoder().decode(properties.getJwtCustomerPublicKey()));
+                    Base64.getDecoder().decode(jwtCustomerPublicKey));
             PublicKey customerPublicKey;
             try {
                 Certificate customerCert = CertificateFactory
@@ -149,7 +152,7 @@ public class ConfigSecurity extends WebSecurityConfigurerAdapter {
                 throw new RuntimeException("Failed to initialize Customer JWT");
             }
             processor.setJWTClaimsSetAwareJWSKeySelector((header, claims, context) ->
-                    List.of(claims.getIssuer().equals(Constants.CLAIMS_ISS) ?
+                    List.of(claims.getIssuer().equals(Constants.CLAIM_ISS_BOUNCER) ?
                             bouncerPublicKey :
                             customerPublicKey));
             processor.setJWTClaimsSetVerifier(new JwtClaimsVerifier<>());

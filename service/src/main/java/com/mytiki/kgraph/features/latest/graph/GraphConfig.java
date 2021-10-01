@@ -9,6 +9,7 @@ package com.mytiki.kgraph.features.latest.graph;
 import com.arangodb.ArangoDatabase;
 import com.arangodb.entity.EdgeDefinition;
 import com.arangodb.entity.GraphEntity;
+import com.arangodb.model.GraphCreateOptions;
 import com.arangodb.springframework.annotation.EnableArangoRepositories;
 import com.arangodb.springframework.core.ArangoOperations;
 import com.mytiki.kgraph.config.ConfigProperties;
@@ -16,6 +17,7 @@ import com.mytiki.kgraph.utilities.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
@@ -29,6 +31,9 @@ import java.util.Optional;
 public class GraphConfig {
     public static final String PACKAGE_PATH = Constants.PACKAGE_FEATURES_LATEST_DOT_PATH + ".graph";
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
+    @Value("${arangodb.replication:1}")
+    Integer replication;
 
     @Autowired
     private ArangoOperations operations;
@@ -72,7 +77,8 @@ public class GraphConfig {
 
         if(graph.isEmpty()){
             logger.debug("No graph " + properties.getGraphName() + ". Trying to create it.");
-            db.graph(properties.getGraphName()).create(List.of(edgeDefinition));
+            db.graph(properties.getGraphName()).create(List.of(edgeDefinition),
+                    new GraphCreateOptions().replicationFactor(replication));
         }else{
             Optional<EdgeDefinition> currentEdgeDefinition = graph.get().getEdgeDefinitions()
                     .stream()
