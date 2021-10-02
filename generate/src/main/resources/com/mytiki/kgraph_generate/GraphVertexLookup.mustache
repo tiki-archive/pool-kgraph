@@ -1,0 +1,61 @@
+/*
+* Copyright (c) TIKI Inc.
+* MIT license. See LICENSE file in root directory.
+*/
+
+package com.mytiki.kgraph.features.latest.graph;
+
+import com.arangodb.springframework.repository.ArangoRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import java.util.Set;
+import java.util.List;
+
+@Component
+public class GraphVertexLookup {
+{{#vertices}}
+    private final GraphVertex{{{type_pascal}}}Repository {{{type_camel}}}Repository;
+{{/vertices}}
+
+    @Autowired
+    public GraphVertexLookup(
+{{#vertices}}
+        GraphVertex{{{type_pascal}}}Repository {{{type_camel}}}Repository{{^last}}, {{/last}}
+{{/vertices}}
+    ){
+{{#vertices}}
+        this.{{{type_camel}}}Repository = {{{type_camel}}}Repository;
+{{/vertices}}
+    }
+
+    public Class<? extends GraphVertexDO> getDOClass(String type){
+        switch (type){
+{{#vertices}}
+            case "{{{type_camel}}}":
+                return GraphVertex{{{type_pascal}}}DO.class;
+{{/vertices}}
+            default:
+                return null;
+        }
+    }
+
+    public GraphVertexRepository<? extends GraphVertexDO> getRepository(String type){
+        switch (type){
+{{#vertices}}
+            case "{{{type_camel}}}":
+                return {{{type_camel}}}Repository;
+{{/vertices}}
+            default:
+                return null;
+        }
+    }
+
+    public String getSchema(){
+        return "[{{#vertices}}{\"type\": \"{{type_camel}}\",\"fields\":[{\"name\":\"value\",\"dataType\":\"string\"}{{#fields}},{\"name\":\"{{name_camel}}\",\"dataType\":\"{{type_json}}{{#collection_json}}[{{{.}}}]{{/collection_json}}\"}{{/fields}}]}{{^last}},{{/last}}{{/vertices}}]";
+    }
+{{=<% %>=}}
+    public String[] getVertices(){
+    return new String[]{<%#vertices%>"<%type_camel%>"<%^last%>,<%/last%><%/vertices%>};
+    }
+<%={{ }}=%>
+}

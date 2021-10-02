@@ -1,0 +1,35 @@
+/*
+ * Copyright (c) TIKI Inc.
+ * MIT license. See LICENSE file in root directory.
+ */
+
+package com.mytiki.kgraph.features.latest.edge;
+
+import com.mytiki.common.ApiConstants;
+import com.mytiki.common.reply.ApiReplyAO;
+import com.mytiki.common.reply.ApiReplyAOFactory;
+import com.mytiki.kgraph.utilities.Constants;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.annotation.security.RolesAllowed;
+
+@RestController
+@RequestMapping(value = EdgeController.PATH_CONTROLLER)
+public class EdgeController {
+    public static final String PATH_CONTROLLER = ApiConstants.API_LATEST_ROUTE + "edge";
+
+    private final EdgeService edgeService;
+
+    public EdgeController(EdgeService edgeService) {
+        this.edgeService = edgeService;
+    }
+
+    @RolesAllowed(Constants.ROLE_USER)
+    @RequestMapping(method = RequestMethod.POST)
+    public ApiReplyAO<EdgeAO> post(@RequestBody EdgeAO body) {
+        return ApiReplyAOFactory.ok(edgeService.add(body));
+    }
+}
