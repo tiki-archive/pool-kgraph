@@ -48,7 +48,7 @@
         <dependency>
             <groupId>com.arangodb</groupId>
             <artifactId>arangodb-spring-data</artifactId>
-            <version>3.5.0</version>
+            <version>3.6.0</version>
         </dependency>
 
         <dependency>
