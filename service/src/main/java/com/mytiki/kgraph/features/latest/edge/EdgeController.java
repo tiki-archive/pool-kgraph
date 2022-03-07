@@ -7,14 +7,16 @@ package com.mytiki.kgraph.features.latest.edge;
 
 import com.mytiki.common.ApiConstants;
 import com.mytiki.common.reply.ApiReplyAO;
-import com.mytiki.common.reply.ApiReplyAOFactory;
+import com.mytiki.common.reply.ApiReplyAOBuilder;
 import com.mytiki.kgraph.utilities.Constants;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.security.RolesAllowed;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = EdgeController.PATH_CONTROLLER)
@@ -29,7 +31,10 @@ public class EdgeController {
 
     @RolesAllowed(Constants.ROLE_USER)
     @RequestMapping(method = RequestMethod.POST)
-    public ApiReplyAO<EdgeAO> post(@RequestBody EdgeAO body) {
-        return ApiReplyAOFactory.ok(edgeService.add(body));
+    public ApiReplyAO<?> post(@RequestBody List<EdgeAO> body) {
+        //edgeService.add(body);
+        return new ApiReplyAOBuilder<>()
+                .httpStatus(HttpStatus.ACCEPTED)
+                .build();
     }
 }

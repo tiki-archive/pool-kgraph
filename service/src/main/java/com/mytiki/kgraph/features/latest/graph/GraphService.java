@@ -31,6 +31,20 @@ public class GraphService {
             throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         GraphVertexDO fromDO = newVertex(fromType);
         fromDO.setValue(fromValue);
+        fromDO = insertVertex(fromDO);
+
+        GraphVertexDO toDO = newVertex(toType);
+        toDO.setValue(toValue);
+        toDO = insertVertex(toDO);
+
+        return upsertEdge(fromDO, toDO, fingerprint);
+    }
+
+    public GraphEdgeDO<? extends GraphVertexDO, ? extends GraphVertexDO> upsertEdgeAndVertex(
+            String fromType, String fromValue, String toType, String toValue, String fingerprint)
+            throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        GraphVertexDO fromDO = newVertex(fromType);
+        fromDO.setValue(fromValue);
         fromDO = upsertVertex(fromDO);
 
         GraphVertexDO toDO = newVertex(toType);
@@ -42,18 +56,17 @@ public class GraphService {
 
     public <T extends GraphVertexDO> Optional<T> getVertex(String type, String value){
         GraphVertexRepository<T> repository = getRepository(type);
-        return repository.findByValue(value);
+        try {
+            return repository.findByValue(value);
+        }catch (ArangoDBException ex){
+            if(ex.getErrorNum() == 1203) return Optional.empty();
+            else throw ex;
+        }
     }
 
     public <T extends GraphVertexDO> T upsertVertex(T vertex){
-        Optional<T> saved;
         GraphVertexRepository<T> repository = getRepository(vertex.getCollection());
-        try {
-            saved = repository.findByValue(vertex.getValue());
-        }catch (ArangoDBException ex){
-            if(ex.getErrorNum() == 1203) saved = Optional.empty();
-            else throw ex;
-        }
+        Optional<T> saved = getVertex(vertex.getCollection(), vertex.getValue());
         if(saved.isPresent()){
             vertex = merge(saved.get(), vertex);
             vertex.setModified(ZonedDateTime.now());
@@ -63,6 +76,18 @@ public class GraphService {
             vertex.setModified(now);
         }
         return repository.save(vertex);
+    }
+
+    public <T extends GraphVertexDO> T insertVertex(T vertex){
+        GraphVertexRepository<T> repository = getRepository(vertex.getCollection());
+        Optional<T> saved = getVertex(vertex.getCollection(), vertex.getValue());
+        if(saved.isEmpty()){
+            ZonedDateTime now = ZonedDateTime.now();
+            vertex.setCreated(now);
+            vertex.setModified(now);
+            return repository.save(vertex);
+        }else
+            return saved.get();
     }
 
     public String getSchema() {

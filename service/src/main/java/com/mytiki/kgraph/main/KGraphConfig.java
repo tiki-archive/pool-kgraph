@@ -13,6 +13,7 @@ import com.mytiki.kgraph.config.ConfigSecurity;
 import com.mytiki.kgraph.utilities.ApiExceptionHandler;
 import com.mytiki.kgraph.utilities.UtilitiesConfig;
 import org.springframework.context.annotation.Import;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 import javax.annotation.PostConstruct;
@@ -28,6 +29,7 @@ import java.util.TimeZone;
         ConfigSecurity.class
 })
 @EnableScheduling
+@EnableAsync
 public class KGraphConfig {
 
     @PostConstruct

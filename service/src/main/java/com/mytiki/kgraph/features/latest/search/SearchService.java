@@ -32,12 +32,12 @@ public class SearchService {
         this.graphService = graphService;
     }
 
-    List<SearchAO> search(SearchAOVertex start, SearchAOVertex end, Integer depth){
+    List<SearchAO> search(String startType, String startValue, String endType, String endValue, Integer depth){
         List<GraphEdgeDO<? extends GraphVertexDO, ? extends GraphVertexDO>> edges;
-        if(end != null)
-            edges = graphService.shortestPath(start.getType(), start.getType(), end.getType(), end.getValue());
+        if(endType != null && endValue != null)
+            edges = graphService.shortestPath(startType, startValue, endType, endValue);
         else
-            edges = graphService.traverse(start.getType(), start.getValue(), depth);
+            edges = graphService.traverse(startType, startValue, depth);
         return edges.stream().map(e -> {
             SearchAO ao = new SearchAO();
             SearchAOVertex aoFrom = new SearchAOVertex();

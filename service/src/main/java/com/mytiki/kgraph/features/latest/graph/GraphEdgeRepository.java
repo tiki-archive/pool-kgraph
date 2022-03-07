@@ -22,7 +22,7 @@ public interface GraphEdgeRepository extends
 
     List<GraphEdgeDO<? extends GraphVertexDO, ? extends GraphVertexDO>> findByFingerprintsContains(String fingerprint);
 
-    @Query("FOR v,e,p IN 1..@depth ANY @start GRAPH kgraph FILTER p.edges[*].weight ALL <= @epsilon RETURN e")
+    @Query("FOR v,e,p IN 1..@depth INBOUND @start GRAPH kgraph FILTER p.edges[*].weight ALL <= @epsilon RETURN e")
     List<GraphEdgeDO<? extends GraphVertexDO, ? extends GraphVertexDO>> traverse(String start, int depth, Integer epsilon);
 
     @Query("FOR v,e,p IN ANY SHORTEST_PATH @start TO @end GRAPH kgraph OPTIONS {weightAttribute: 'weight'} FILTER e != null AND e.weight <= @epsilon RETURN e")

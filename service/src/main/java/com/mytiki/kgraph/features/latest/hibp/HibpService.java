@@ -62,7 +62,7 @@ public class HibpService {
                 doList.forEach(dataBreachDO -> {
                     graphService.upsertVertex(dataBreachDO);
                     try {
-                        graphService.upsertEdge(
+                        graphService.upsertEdgeAndVertex(
                                 dataBreachDO.getCollection(),
                                 dataBreachDO.getValue(),
                                 GraphVertexCompanyDO.COLLECTION,

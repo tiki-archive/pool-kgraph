@@ -61,6 +61,11 @@ vertices:
         clazz: java.math.BigDecimal
       - name: comboScore
         clazz: java.math.BigDecimal
+  - type: content
+  - type: action
+  - type: day
+  - type: month
+  - type: year
 
 # Supported Classes (https://www.arangodb.com/docs/stable/drivers/spring-data-reference-mapping.html)
 # java.lang.String
