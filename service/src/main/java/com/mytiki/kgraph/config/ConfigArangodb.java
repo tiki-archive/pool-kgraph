@@ -71,7 +71,9 @@ public class ConfigArangodb implements ArangoConfiguration {
                 ks.load(null);
                 ks.setCertificateEntry("caCert", caCert);
                 tmf.init(ks);
-                SSLContext sslContext = SSLContext.getInstance("TLS");
+                SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
+                SSLContextBuilder.useProtocol("SSL");
+                SSLContextBuilder.setProtocol("SSL");
                 sslContext.init(null, tmf.getTrustManagers(), null);
                 return builder.sslContext(sslContext);
             }else
