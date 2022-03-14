@@ -31,10 +31,12 @@ public class SearchController {
     @RolesAllowed(Constants.ROLE_CUSTOMER)
     @RequestMapping(method = RequestMethod.GET)
     public ApiReplyAO<List<SearchAO>> get(
-            @RequestParam SearchAOVertex start,
-            @RequestParam(required = false) SearchAOVertex end,
+            @RequestParam(name = "start-type") String startType,
+            @RequestParam(name = "start-value") String startValue,
+            @RequestParam(name = "end-type", required = false) String endType,
+            @RequestParam(name = "end-value", required = false) String endValue,
             @RequestParam(required = false) Integer depth) {
-        if(end == null && depth == null) depth = 1;
-        return ApiReplyAOFactory.ok(searchService.search(start, end, depth));
+        if((endType == null || endValue == null) && depth == null) depth = 1;
+        return ApiReplyAOFactory.ok(searchService.search(startType, startValue, endType, endValue, depth));
     }
 }
