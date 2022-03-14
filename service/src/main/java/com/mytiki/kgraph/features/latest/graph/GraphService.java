@@ -29,11 +29,11 @@ public class GraphService {
     public GraphEdgeDO<? extends GraphVertexDO, ? extends GraphVertexDO> upsertEdge(
             String fromType, String fromValue, String toType, String toValue, String fingerprint)
             throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        GraphVertexDO fromDO = newVertex(fromType);
+        GraphVertexDO fromDO = vertexFromType(fromType);
         fromDO.setValue(fromValue);
         fromDO = insertVertex(fromDO);
 
-        GraphVertexDO toDO = newVertex(toType);
+        GraphVertexDO toDO = vertexFromType(toType);
         toDO.setValue(toValue);
         toDO = insertVertex(toDO);
 
@@ -43,11 +43,11 @@ public class GraphService {
     public GraphEdgeDO<? extends GraphVertexDO, ? extends GraphVertexDO> upsertEdgeAndVertex(
             String fromType, String fromValue, String toType, String toValue, String fingerprint)
             throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        GraphVertexDO fromDO = newVertex(fromType);
+        GraphVertexDO fromDO = vertexFromType(fromType);
         fromDO.setValue(fromValue);
         fromDO = upsertVertex(fromDO);
 
-        GraphVertexDO toDO = newVertex(toType);
+        GraphVertexDO toDO = vertexFromType(toType);
         toDO.setValue(toValue);
         toDO = upsertVertex(toDO);
 
@@ -119,6 +119,13 @@ public class GraphService {
             return List.of();
     }
 
+    @SuppressWarnings("unchecked")
+    public <T extends GraphVertexDO> T vertexFromType(String type)
+            throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        Class<T> doClass = (Class<T>) lookup.getDOClass(type);
+        return doClass.getConstructor().newInstance();
+    }
+
     private <F extends GraphVertexDO, T extends GraphVertexDO>
     GraphEdgeDO<F,T> upsertEdge(F from, T to, String fingerprint){
         Optional<GraphEdgeDO<F,T>> saved = edgeRepository.findByVertices(from.getRawId(), to.getRawId());
@@ -144,13 +151,6 @@ public class GraphService {
     @SuppressWarnings("unchecked")
     private <T extends GraphVertexDO> GraphVertexRepository<T> getRepository(String type){
         return (GraphVertexRepository<T>) lookup.getRepository(type);
-    }
-
-    @SuppressWarnings("unchecked")
-    private <T extends GraphVertexDO> T newVertex(String type)
-            throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        Class<T> doClass = (Class<T>) lookup.getDOClass(type);
-        return doClass.getConstructor().newInstance();
     }
 
     @SuppressWarnings("unchecked")
