@@ -67,7 +67,6 @@ public class GraphEdgeDO<F extends GraphVertexDO, T extends GraphVertexDO> imple
 
     public void setFingerprints(Set<String> fingerprints) {
         this.fingerprints = fingerprints;
-        setWeight(fingerprints != null ? 1.0/fingerprints.size() : null);
     }
 
     public ZonedDateTime getCreated() {
