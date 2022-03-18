@@ -37,7 +37,12 @@ public class GraphService {
         toDO.setValue(toValue);
         toDO = insertVertex(toDO);
 
-        return upsertEdge(fromDO, toDO, fingerprint);
+        GraphEdgeDO<GraphVertexDO, GraphVertexDO> edge = new GraphEdgeDO();
+        edge.setFingerprints(Set.of(fingerprint));
+        edge.setFrom(fromDO);
+        edge.setTo(toDO);
+
+        return edgeRepository.upsert(edge);
     }
 
     public GraphEdgeDO<? extends GraphVertexDO, ? extends GraphVertexDO> upsertEdgeAndVertex(
@@ -51,7 +56,12 @@ public class GraphService {
         toDO.setValue(toValue);
         toDO = upsertVertex(toDO);
 
-        return upsertEdge(fromDO, toDO, fingerprint);
+        GraphEdgeDO<GraphVertexDO, GraphVertexDO> edgeDO = new GraphEdgeDO<>();
+        edgeDO.setFingerprints(Set.of(fingerprint));
+        edgeDO.setFrom(fromDO);
+        edgeDO.setTo(toDO);
+
+        return edgeRepository.upsert(edgeDO);
     }
 
     public <T extends GraphVertexDO> Optional<T> getVertex(String type, String value){
@@ -124,28 +134,6 @@ public class GraphService {
             throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         Class<T> doClass = (Class<T>) lookup.getDOClass(type);
         return doClass.getConstructor().newInstance();
-    }
-
-    private <F extends GraphVertexDO, T extends GraphVertexDO>
-    GraphEdgeDO<F,T> upsertEdge(F from, T to, String fingerprint){
-        Optional<GraphEdgeDO<F,T>> saved = edgeRepository.findByVertices(from.getRawId(), to.getRawId());
-        GraphEdgeDO<F,T> edgeDO;
-        if (saved.isPresent()) {
-            edgeDO = saved.get();
-            Set<String> fingerprintList = edgeDO.getFingerprints();
-            fingerprintList.add(fingerprint);
-            edgeDO.setFingerprints(fingerprintList);
-            edgeDO.setModified(ZonedDateTime.now());
-        } else {
-            edgeDO = new GraphEdgeDO<>();
-            edgeDO.setFrom(from);
-            edgeDO.setTo(to);
-            edgeDO.setFingerprints(new HashSet<>(List.of(fingerprint)));
-            ZonedDateTime now = ZonedDateTime.now();
-            edgeDO.setCreated(now);
-            edgeDO.setModified(now);
-        }
-        return edgeRepository.save(edgeDO);
     }
 
     @SuppressWarnings("unchecked")
