@@ -35,10 +35,10 @@ public class VertexService {
         }
     }
 
-    public <T extends VertexDO> Optional<T> getVertex(String type, String value){
+    public <T extends VertexDO> Optional<T> getVertex(String type, String id){
         VertexRepository<T> repository = getRepository(type);
         try {
-            return repository.findByValue(value);
+            return repository.findById(id);
         }catch (ArangoDBException ex){
             if(ex.getErrorNum() == 1203) return Optional.empty();
             else throw ex;
@@ -61,4 +61,6 @@ public class VertexService {
     private <T extends VertexDO> VertexRepository<T> getRepository(String type){
         return (VertexRepository<T>) vertexLookup.getRepository(type);
     }
+
+    //TODO bulk insert by collection with ignore flag
 }

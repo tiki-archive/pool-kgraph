@@ -5,7 +5,6 @@
 
 package com.mytiki.kgraph.features.latest.vertex;
 
-import com.arangodb.springframework.annotation.HashIndexed;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 
@@ -15,9 +14,6 @@ import java.time.ZonedDateTime;
 public abstract class VertexDO implements Serializable {
     @Id
     private String id;
-
-    @HashIndexed(unique = true)
-    private String value;
 
     private ZonedDateTime created;
 
@@ -36,14 +32,6 @@ public abstract class VertexDO implements Serializable {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
     }
 
     public ZonedDateTime getCreated() {
@@ -74,7 +62,6 @@ public abstract class VertexDO implements Serializable {
     public String toString() {
         return "{" +
                 "id='" + id + '\'' +
-                ", value='" + value + '\'' +
                 ", collection='" + collection + '\'' +
                 ", created='" + created + '\'' +
                 ", modified='" + modified + '\'' +

@@ -23,7 +23,6 @@ public class CompanyService {
     private final HibpService hibpService;
     private final VertexService vertexService;
 
-
     public CompanyService(
             BigPictureService bigPictureService,
             HibpService hibpService,
@@ -46,7 +45,7 @@ public class CompanyService {
                         company.isEmpty() ? new VertexCompanyDO() : company.get(),
                         bigPictureAO);
                 cacheDO.setCached(now);
-                cacheDO.setValue(domain);
+                cacheDO.setId(domain);
                 cacheDO = vertexService.upsertVertex(cacheDO);
                 return toAO(cacheDO, hibpService.findByDomain(domain));
             }catch (BigPictureException ex){
@@ -71,7 +70,7 @@ public class CompanyService {
             VertexCompanyDO cacheDO = mergeBigPicture(
                     company.isEmpty() ? new VertexCompanyDO() : company.get(),
                     bigPictureAO);
-            cacheDO.setValue(bigPictureAO.getDomain());
+            cacheDO.setId(bigPictureAO.getDomain());
             cacheDO.setCached(now);
             vertexService.upsertVertex(cacheDO);
         }
@@ -102,7 +101,7 @@ public class CompanyService {
     private CompanyAO toAO(VertexCompanyDO companyDO, List<VertexDataBreachDO> breaches) {
         CompanyAOAbout about = new CompanyAOAbout();
         about.setAddress(companyDO.getAddress());
-        about.setDomain(companyDO.getValue());
+        about.setDomain(companyDO.getId());
         about.setName(companyDO.getName());
         about.setDescription(companyDO.getDescription());
         about.setLogo(companyDO.getLogo());

@@ -120,7 +120,7 @@ public class KgraphTests {
     @Test
     public void Test_VertexUpsert_Success() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         VertexCompanyDO vertexCompanyDO = new VertexCompanyDO();
-        vertexCompanyDO.setValue("facebook.com");
+        vertexCompanyDO.setId("facebook.com");
         VertexCompanyDO saved = companyRepository.upsert(vertexCompanyDO);
         assertNotNull(saved);
     }

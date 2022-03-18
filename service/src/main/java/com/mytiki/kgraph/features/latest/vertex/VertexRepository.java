@@ -12,8 +12,6 @@ import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 
 public interface VertexRepository<T extends VertexDO> extends ArangoRepository<T, String> {
-    Optional<T> findByValue(String value);
-
     @Query("LET now = DATE_ISO8601(DATE_NOW()) " +
             "LET vertex = @vertex " +
             "UPSERT { value: vertex.value } " +

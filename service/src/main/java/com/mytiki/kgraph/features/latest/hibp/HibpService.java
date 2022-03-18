@@ -72,7 +72,7 @@ public class HibpService {
                 doList.forEach(dataBreachDO -> {
                     dataBreachDO = vertexService.upsertVertex(dataBreachDO);
                     VertexCompanyDO companyDO = new VertexCompanyDO();
-                    companyDO.setValue(dataBreachDO.getDomain());
+                    companyDO.setId(dataBreachDO.getDomain());
                     companyDO = vertexService.upsertVertex(companyDO);
                     edgeService.upsertEdge(dataBreachDO, companyDO, "TIKI");
                 });
@@ -126,7 +126,7 @@ public class HibpService {
 
     private VertexDataBreachDO map(HibpAO hibpAO){
         VertexDataBreachDO dataBreachDO = new VertexDataBreachDO();
-        dataBreachDO.setValue(hibpAO.getName());
+        dataBreachDO.setId(hibpAO.getName());
         dataBreachDO.setDomain(hibpAO.getDomain());
         dataBreachDO.setBreached(ZonedDateTime.of(hibpAO.getBreachDate(),
                 LocalTime.MIDNIGHT, ZoneOffset.UTC));

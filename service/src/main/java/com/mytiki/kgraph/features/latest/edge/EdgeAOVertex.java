@@ -10,16 +10,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class EdgeAOVertex {
     private String type;
-    private String value;
-
-    public EdgeAOVertex() {}
+    private String id;
 
     @JsonCreator
     public EdgeAOVertex(
             @JsonProperty(required = true) String type,
-            @JsonProperty(required = true) String value) {
+            @JsonProperty(required = true) String id) {
         this.type = type;
-        this.value = value;
+        this.id = id;
     }
 
     public String getType() {
@@ -30,11 +28,11 @@ public class EdgeAOVertex {
         this.type = type;
     }
 
-    public String getValue() {
-        return value;
+    public String getId() {
+        return id;
     }
 
-    public void setValue(String value) {
-        this.value = value;
+    public void setId(String id) {
+        this.id = id;
     }
 }

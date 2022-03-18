@@ -13,9 +13,6 @@ public class EdgeAO {
     private EdgeAOVertex to;
     private String fingerprint;
 
-    public EdgeAO() {
-    }
-
     @JsonCreator
     public EdgeAO(
             @JsonProperty(required = true) EdgeAOVertex from,
