@@ -3,21 +3,21 @@
 * MIT license. See LICENSE file in root directory.
 */
 
-package com.mytiki.kgraph.features.latest.graph;
+package com.mytiki.kgraph.features.latest.vertex;
 
 {{#imports}}
 import {{.}};
 {{/imports}}
 import com.arangodb.springframework.annotation.Document;
 
-@Document(GraphVertex{{{type_pascal}}}DO.COLLECTION)
-public class GraphVertex{{{type_pascal}}}DO extends GraphVertexDO {
+@Document(Vertex{{{type_pascal}}}DO.COLLECTION)
+public class Vertex{{{type_pascal}}}DO extends VertexDO {
     public static final String COLLECTION = "{{{type_camel}}}";
 {{#fields}}
     private {{{type_java}}} {{{name_camel}}};
 {{/fields}}
 
-    public GraphVertex{{{type_pascal}}}DO() {
+    public Vertex{{{type_pascal}}}DO() {
         super(COLLECTION);
     }
 {{#fields}}

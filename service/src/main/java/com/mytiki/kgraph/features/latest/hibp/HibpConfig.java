@@ -1,7 +1,8 @@
 package com.mytiki.kgraph.features.latest.hibp;
 
-import com.mytiki.kgraph.features.latest.graph.GraphService;
+import com.mytiki.kgraph.features.latest.edge.EdgeService;
 import com.mytiki.kgraph.features.latest.sync.SyncService;
+import com.mytiki.kgraph.features.latest.vertex.VertexService;
 import com.mytiki.kgraph.utilities.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,7 +19,8 @@ public class HibpConfig {
     @Bean
     public HibpService hibpService(
             @Autowired RestTemplateBuilder restTemplateBuilder,
-            @Autowired GraphService graphService,
+            @Autowired VertexService vertexService,
+            @Autowired EdgeService edgeService,
             @Autowired SyncService syncService){
         return new HibpService(
                 restTemplateBuilder
@@ -26,6 +28,6 @@ public class HibpConfig {
                         .defaultHeader("hibp-api-key", apiKeyHibp)
                         .defaultHeader("user-agent", "TIKI")
                         .build(),
-                graphService, syncService);
+                vertexService, edgeService, syncService);
     }
 }

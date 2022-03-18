@@ -5,14 +5,23 @@
 
 package com.mytiki.kgraph.features.latest.edge;
 
-import com.mytiki.kgraph.features.latest.graph.GraphService;
+import com.arangodb.springframework.annotation.EnableArangoRepositories;
+import com.mytiki.kgraph.config.ConfigProperties;
+import com.mytiki.kgraph.features.latest.vertex.VertexService;
+import com.mytiki.kgraph.utilities.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 
+@EnableArangoRepositories(EdgeConfig.PACKAGE_PATH)
 public class EdgeConfig {
+    public static final String PACKAGE_PATH = Constants.PACKAGE_FEATURES_LATEST_DOT_PATH + ".edge";
+
     @Bean
-    public EdgeService edgeService(@Autowired GraphService graphService){
-        return new EdgeService(graphService);
+    public EdgeService edgeService(
+            @Autowired EdgeRepository edgeRepository,
+            @Autowired VertexService vertexService,
+            @Autowired ConfigProperties configProperties){
+        return new EdgeService(edgeRepository, vertexService, configProperties);
     }
 
     @Bean

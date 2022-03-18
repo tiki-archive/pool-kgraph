@@ -3,19 +3,20 @@
  * MIT license. See LICENSE file in root directory.
  */
 
-package com.mytiki.kgraph.features.latest.graph;
+package com.mytiki.kgraph.features.latest.edge;
 
 import com.arangodb.springframework.annotation.Edge;
 import com.arangodb.springframework.annotation.From;
 import com.arangodb.springframework.annotation.To;
+import com.mytiki.kgraph.features.latest.vertex.VertexDO;
 import org.springframework.data.annotation.Id;
 
 import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.util.Set;
 
-@Edge(GraphEdgeDO.COLLECTION_NAME)
-public class GraphEdgeDO<F extends GraphVertexDO, T extends GraphVertexDO> implements Serializable {
+@Edge(EdgeDO.COLLECTION_NAME)
+public class EdgeDO<F extends VertexDO, T extends VertexDO> implements Serializable {
     public static final String COLLECTION_NAME = "edge";
 
     @Id
@@ -35,7 +36,7 @@ public class GraphEdgeDO<F extends GraphVertexDO, T extends GraphVertexDO> imple
 
     private Double weight;
 
-    public GraphEdgeDO() {}
+    public EdgeDO() {}
 
     public String getId() {
         return id;

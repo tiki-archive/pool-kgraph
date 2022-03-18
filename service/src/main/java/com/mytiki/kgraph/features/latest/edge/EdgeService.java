@@ -6,15 +6,11 @@
 package com.mytiki.kgraph.features.latest.edge;
 
 
-import com.mytiki.common.exception.ApiExceptionFactory;
-import com.mytiki.kgraph.features.latest.graph.GraphEdgeDO;
-import com.mytiki.kgraph.features.latest.graph.GraphService;
-import com.mytiki.kgraph.features.latest.graph.GraphVertexDO;
+import com.mytiki.kgraph.config.ConfigProperties;
+import com.mytiki.kgraph.features.latest.vertex.VertexDO;
+import com.mytiki.kgraph.features.latest.vertex.VertexService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.AsyncResult;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.InvocationTargetException;
@@ -25,34 +21,28 @@ import java.util.stream.Stream;
 
 public class EdgeService {
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-    private final GraphService graphService;
+    private final EdgeRepository edgeRepository;
+    private final VertexService vertexService;
+    private final ConfigProperties configProperties;
 
-    public EdgeService(GraphService graphService) {
-        this.graphService = graphService;
+    public EdgeService(
+            EdgeRepository edgeRepository,
+            VertexService vertexService,
+            ConfigProperties configProperties) {
+        this.edgeRepository = edgeRepository;
+        this.vertexService = vertexService;
+        this.configProperties = configProperties;
     }
 
-    @Async
-    public Future<List<EdgeAO>> add(List<EdgeAO> body){
-       try {
-           logger.info("Edges Added Request: " + body.size());
-           for(EdgeAO edge : body) {
-               graphService.upsertEdge(
-                       edge.getFrom().getType(),
-                       edge.getFrom().getValue(),
-                       edge.getTo().getType(),
-                       edge.getTo().getValue(),
-                       edge.getFingerprint());
-           }
-           logger.info("Edges Added: " + body.size());
-           return new AsyncResult<>(body);
-       }catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e) {
-           throw ApiExceptionFactory.exception(HttpStatus.UNPROCESSABLE_ENTITY, e.getMessage());
-       }
-    }
-
-    public List<GraphEdgeDO<GraphVertexDO,GraphVertexDO>> compress(List<EdgeAO> req)
+    public Future<List<EdgeAO>> add(List<EdgeAO> body)
             throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        Map<String, GraphEdgeDO<GraphVertexDO, GraphVertexDO>> edges = new HashMap<>();
+        List<EdgeDO<? extends VertexDO,? extends VertexDO>> edges = compress(body);
+        return null;
+    }
+
+    public List<EdgeDO<? extends VertexDO,? extends VertexDO>> compress(List<EdgeAO> req)
+            throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        Map<String, EdgeDO<? extends VertexDO, ? extends VertexDO>> edges = new HashMap<>();
         for(EdgeAO edge : req){
             String fKey = edge.getFrom().getType() + ":" + edge.getFrom().getValue();
             String tKey = edge.getTo().getType() + ":" + edge.getTo().getValue();
@@ -62,13 +52,11 @@ public class EdgeService {
                 fps.add(edge.getFingerprint());
                 edges.get(key).setFingerprints(fps);
             }else {
-                GraphEdgeDO<GraphVertexDO, GraphVertexDO> graphEdge = new GraphEdgeDO<>();
-                GraphVertexDO toVertex = graphService.vertexFromType(edge.getTo().getType());
-                toVertex.setValue(edge.getTo().getValue());
-                GraphVertexDO fromVertex = graphService.vertexFromType(edge.getFrom().getType());
-                fromVertex.setValue(edge.getFrom().getValue());
-                graphEdge.setFrom(fromVertex);
-                graphEdge.setTo(toVertex);
+                EdgeDO<? extends VertexDO, ? extends VertexDO> graphEdge = new EdgeDO<>();
+                graphEdge.setFrom(vertexService.vertexFromType(edge.getFrom().getType()));
+                graphEdge.getFrom().setValue(edge.getFrom().getValue());
+                graphEdge.setTo(vertexService.vertexFromType(edge.getTo().getType()));
+                graphEdge.getTo().setValue(edge.getTo().getValue());
                 graphEdge.setFingerprints(Set.of(edge.getFingerprint()));
                 edges.put(key, graphEdge);
             }
@@ -76,4 +64,21 @@ public class EdgeService {
         return new ArrayList<>(edges.values());
     }
 
+    public EdgeDO<? extends VertexDO, ? extends VertexDO> upsertEdge(
+            VertexDO from, VertexDO to, String fingerprint) {
+        EdgeDO<VertexDO, VertexDO> edge = new EdgeDO<>();
+        edge.setFingerprints(Set.of(fingerprint));
+        edge.setFrom(from);
+        edge.setTo(to);
+        return edgeRepository.upsert(edge);
+    }
+
+    public List<EdgeDO<? extends VertexDO, ? extends VertexDO>>
+    traverse(String type, String value, Integer depth){
+        Optional<VertexDO> start = vertexService.getVertex(type, value);
+        if(start.isPresent()) {
+            return edgeRepository.traverse(start.get().getRawId(), depth, configProperties.getEpsilon());
+        }else
+            return List.of();
+    }
 }

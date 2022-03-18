@@ -3,7 +3,7 @@
  * MIT license. See LICENSE file in root directory.
  */
 
-package com.mytiki.kgraph.features.latest.graph;
+package com.mytiki.kgraph.features.latest.vertex;
 
 import com.arangodb.springframework.annotation.HashIndexed;
 import org.springframework.data.annotation.Id;
@@ -12,7 +12,7 @@ import org.springframework.data.annotation.Transient;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
 
-public abstract class GraphVertexDO implements Serializable {
+public abstract class VertexDO implements Serializable {
     @Id
     private String id;
 
@@ -26,7 +26,7 @@ public abstract class GraphVertexDO implements Serializable {
     @Transient
     private final String collection;
 
-    public GraphVertexDO(String collection) {
+    public VertexDO(String collection) {
         this.collection = collection;
     }
 
