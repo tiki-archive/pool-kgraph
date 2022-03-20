@@ -18,15 +18,16 @@ public enum SyncEnum {
         this.name = name;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public static SyncEnum forName(String name) {
+    public static SyncEnum forString(String name) {
         for (SyncEnum e : allOf) {
-            if (e.getName().equals(name))
+            if (e.toString().equals(name))
                 return e;
         }
         return null;
+    }
+
+    @Override
+    public String toString() {
+        return name;
     }
 }

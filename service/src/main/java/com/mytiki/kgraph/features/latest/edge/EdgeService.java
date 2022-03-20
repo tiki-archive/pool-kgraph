@@ -6,13 +6,11 @@
 package com.mytiki.kgraph.features.latest.edge;
 
 
-import com.mytiki.common.exception.ApiExceptionFactory;
 import com.mytiki.kgraph.config.ConfigProperties;
 import com.mytiki.kgraph.features.latest.vertex.VertexDO;
 import com.mytiki.kgraph.features.latest.vertex.VertexService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.InvocationTargetException;
@@ -36,17 +34,17 @@ public class EdgeService {
     }
 
     public List<EdgeAO> add(List<EdgeAO> body) {
-        try {
-            List<EdgeDO<? extends VertexDO, ? extends VertexDO>> edges = compress(body);
-            return upsertEdges(edges);
-        } catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e) {
-            throw ApiExceptionFactory.exception(HttpStatus.BAD_REQUEST, "Bad vertex");
-            //TODO we should add all the non-bad vertices and log the bad ones.
+        List<EdgeDO<? extends VertexDO, ? extends VertexDO>> edges = compress(body);
+        List<VertexDO> vertices = new ArrayList<>();
+        for(EdgeDO<? extends VertexDO, ? extends VertexDO> edge : edges) {
+            vertices.add(edge.getFrom());
+            vertices.add(edge.getTo());
         }
+        vertexService.insert(vertices);
+        return upsert(edges);
     }
 
-    public List<EdgeDO<? extends VertexDO,? extends VertexDO>> compress(List<EdgeAO> req)
-            throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+    public List<EdgeDO<? extends VertexDO,? extends VertexDO>> compress(List<EdgeAO> req){
         Map<String, EdgeDO<? extends VertexDO, ? extends VertexDO>> edges = new HashMap<>();
         for(EdgeAO edge : req){
             String fKey = edge.getFrom().getType() + ":" + edge.getFrom().getId();
@@ -58,18 +56,22 @@ public class EdgeService {
                 edges.get(key).setFingerprints(fps);
             }else {
                 EdgeDO<? extends VertexDO, ? extends VertexDO> graphEdge = new EdgeDO<>();
-                graphEdge.setFrom(vertexService.vertexFromType(edge.getFrom().getType()));
-                graphEdge.getFrom().setId(edge.getFrom().getId());
-                graphEdge.setTo(vertexService.vertexFromType(edge.getTo().getType()));
-                graphEdge.getTo().setId(edge.getTo().getId());
-                graphEdge.setFingerprints(Set.of(edge.getFingerprint()));
-                edges.put(key, graphEdge);
+                try {
+                    graphEdge.setFrom(vertexService.fromType(edge.getFrom().getType()));
+                    graphEdge.getFrom().setId(edge.getFrom().getId());
+                    graphEdge.setTo(vertexService.fromType(edge.getTo().getType()));
+                    graphEdge.getTo().setId(edge.getTo().getId());
+                    graphEdge.setFingerprints(Set.of(edge.getFingerprint()));
+                    edges.put(key, graphEdge);
+                } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
+                    logger.warn("Bad vertex", e);
+                }
             }
         }
         return new ArrayList<>(edges.values());
     }
 
-    public EdgeDO<? extends VertexDO, ? extends VertexDO> upsertEdge(
+    public EdgeDO<? extends VertexDO, ? extends VertexDO> upsert(
             VertexDO from, VertexDO to, String fingerprint) {
         EdgeDO<VertexDO, VertexDO> edge = new EdgeDO<>();
         edge.setFingerprints(Set.of(fingerprint));
@@ -78,7 +80,7 @@ public class EdgeService {
         return edgeRepository.upsert(edge);
     }
 
-    public List<EdgeAO> upsertEdges(
+    public List<EdgeAO> upsert(
             List<EdgeDO<? extends VertexDO, ? extends VertexDO>> edges) {
         return edgeRepository.upsertAll(edges).stream().map(e -> new EdgeAO(
                 new EdgeAOVertex(e.getFrom().getCollection(), e.getFrom().getId()),
@@ -89,9 +91,9 @@ public class EdgeService {
 
     public List<EdgeDO<? extends VertexDO, ? extends VertexDO>>
     traverse(String type, String value, Integer depth){
-        Optional<VertexDO> start = vertexService.getVertex(type, value);
+        Optional<VertexDO> start = vertexService.get(type, value);
         if(start.isPresent()) {
-            return edgeRepository.traverse(start.get().getRawId(), depth, configProperties.getEpsilon());
+            return edgeRepository.traverse(start.get().getDbId(), depth, configProperties.getEpsilon());
         }else
             return List.of();
     }

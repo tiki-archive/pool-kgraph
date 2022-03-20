@@ -46,45 +46,39 @@ public interface EdgeRepository extends
     EdgeDO<? extends VertexDO, ? extends VertexDO> upsert(
             @SpelParam("edge") EdgeDO<? extends VertexDO, ? extends VertexDO> edge);
 
-    @Query("LET now = DATE_ISO8601(DATE_NOW()) #{#upsertAQL} IN #collection RETURN NEW")
-    List<EdgeDO<? extends VertexDO, ? extends VertexDO>> _rawUpsert(@SpelParam("upsertAQL") String upsertAQL);
-
+    @Query("LET now = DATE_ISO8601(DATE_NOW()) " +
+            "FOR i IN #{#edgeList}" +
+            "UPSERT { _from: i.from, _to: i.to } " +
+            "INSERT { _from: i.from, _to: i.to, _class: i.class, created: now, modified: now, fingerprints: i.fingerprints, weight: i.weight } " +
+            "UPDATE { fingerprints: APPEND(OLD.fingerprints, i.fingerprints, true), weight: 1.0/LENGTH(APPEND(OLD.fingerprints, i.fingerprints, true)), modified: now } " +
+            "IN #collection " +
+            "RETURN NEW")
+    List<EdgeDO<? extends VertexDO, ? extends VertexDO>> _upsertAll(@SpelParam("edgeList") String edgeList);
 
     default List<EdgeDO<? extends VertexDO, ? extends VertexDO>> upsertAll(
             List<EdgeDO<? extends VertexDO, ? extends VertexDO>> edges){
-
-        StringBuilder queryBuilder = new StringBuilder();
-        StringBuilder edgeArrayBuilder = new StringBuilder("[");
-
+        StringBuilder edgeListBuilder = new StringBuilder("[");
         for(EdgeDO<? extends VertexDO, ? extends VertexDO> edge : edges) {
             StringBuilder fpListBuilder = new StringBuilder("[");
-            for(String fingerprint : edge.getFingerprints()){
+            for(String fingerprint : edge.getFingerprints())
                 fpListBuilder.append("\"").append(fingerprint).append("\"").append(",");
-            }
             fpListBuilder.deleteCharAt(fpListBuilder.lastIndexOf(","));
             fpListBuilder.append("]");
-
-            edgeArrayBuilder.append("{")
+            edgeListBuilder.append("{")
                     .append("from: \"")
-                    .append(edge.getFrom().getId())
+                    .append(edge.getFrom().getDbId())
                     .append("\", to: \"")
-                    .append(edge.getTo().getId())
+                    .append(edge.getTo().getDbId())
+                    .append("\", class: \"")
+                    .append(edge.getClass())
                     .append("\", fingerprints: ")
                     .append(fpListBuilder)
                     .append(",weight: ")
                     .append(1.0/edge.getFingerprints().size())
                     .append("},");
         }
-        edgeArrayBuilder.deleteCharAt(edgeArrayBuilder.lastIndexOf(","));
-        edgeArrayBuilder.append("]");
-
-        queryBuilder
-                .append("FOR i IN ")
-                .append(edgeArrayBuilder)
-                .append("\nUPSERT { _from: i.from, _to: i.to } ")
-                .append("INSERT { _from: i.from, _to: i.to, created: now, modified: now, fingerprints: i.fingerprints, weight: i.weight } ")
-                .append("UPDATE { fingerprints: APPEND(OLD.fingerprints, i.fingerprints, true), weight: 1.0/LENGTH(APPEND(OLD.fingerprints, i.fingerprints, true)), modified: now } ");
-
-        return this._rawUpsert(queryBuilder.toString());
+        edgeListBuilder.deleteCharAt(edgeListBuilder.lastIndexOf(","));
+        edgeListBuilder.append("]");
+        return this._upsertAll(edgeListBuilder.toString());
     }
 }

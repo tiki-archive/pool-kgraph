@@ -7,8 +7,6 @@ package com.mytiki.kgraph.config;
 
 import com.arangodb.ArangoDB;
 import com.arangodb.springframework.config.ArangoConfiguration;
-import com.mytiki.kgraph.features.latest.sync.SyncEnumConverterToSyncEnum;
-import com.mytiki.kgraph.features.latest.sync.SyncEnumConverterToVPackSlice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.convert.converter.Converter;

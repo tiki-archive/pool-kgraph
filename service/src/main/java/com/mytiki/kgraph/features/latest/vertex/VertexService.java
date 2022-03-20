@@ -12,8 +12,7 @@ import com.mytiki.common.exception.ApiExceptionBuilder;
 import org.springframework.http.HttpStatus;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class VertexService {
     private final ObjectMapper objectMapper;
@@ -24,7 +23,7 @@ public class VertexService {
         this.objectMapper = objectMapper;
     }
 
-    public List<?> getVertexTypes(){
+    public List<?> schema(){
         String schema = vertexLookup.getSchema();
         try {
             return objectMapper.readValue(schema, List.class);
@@ -35,7 +34,7 @@ public class VertexService {
         }
     }
 
-    public <T extends VertexDO> Optional<T> getVertex(String type, String id){
+    public <T extends VertexDO> Optional<T> get(String type, String id){
         VertexRepository<T> repository = getRepository(type);
         try {
             return repository.findById(id);
@@ -45,13 +44,27 @@ public class VertexService {
         }
     }
 
-    public <T extends VertexDO> T upsertVertex(T vertex){
+    public <T extends VertexDO> T upsert(T vertex){
         VertexRepository<T> repository = getRepository(vertex.getCollection());
         return repository.upsert(vertex);
     }
 
+    public List<VertexDO> insert(List<VertexDO> vertices){
+        Map<String, Set<VertexDO>> vertexMap = new HashMap<>();
+        for (VertexDO vertex : vertices) {
+            String collection = vertex.getCollection();
+            if (vertexMap.containsKey(collection))
+                vertexMap.get(collection).add(vertex);
+            else
+                vertexMap.put(collection, Set.of(vertex));
+        }
+        List<VertexDO> inserted = new ArrayList<>();
+        vertexMap.forEach((k,v) -> inserted.addAll(getRepository(k).insertAll(new ArrayList<>(v))));
+        return inserted;
+    }
+
     @SuppressWarnings("unchecked")
-    public <T extends VertexDO> T vertexFromType(String type)
+    public <T extends VertexDO> T fromType(String type)
             throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         Class<T> doClass = (Class<T>) vertexLookup.getDOClass(type);
         return doClass.getConstructor().newInstance();
@@ -61,6 +74,4 @@ public class VertexService {
     private <T extends VertexDO> VertexRepository<T> getRepository(String type){
         return (VertexRepository<T>) vertexLookup.getRepository(type);
     }
-
-    //TODO bulk insert by collection with ignore flag
 }

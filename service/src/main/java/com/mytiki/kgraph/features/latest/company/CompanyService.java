@@ -34,7 +34,7 @@ public class CompanyService {
 
     public CompanyAO findByDomain(String domain) {
         ZonedDateTime now = ZonedDateTime.now(ZoneOffset.UTC);
-        Optional<VertexCompanyDO> company = vertexService.getVertex(VertexCompanyDO.COLLECTION, domain);
+        Optional<VertexCompanyDO> company = vertexService.get(VertexCompanyDO.COLLECTION, domain);
         if (
                 company.isEmpty() ||
                 company.get().getCached() == null ||
@@ -46,7 +46,7 @@ public class CompanyService {
                         bigPictureAO);
                 cacheDO.setCached(now);
                 cacheDO.setId(domain);
-                cacheDO = vertexService.upsertVertex(cacheDO);
+                cacheDO = vertexService.upsert(cacheDO);
                 return toAO(cacheDO, hibpService.findByDomain(domain));
             }catch (BigPictureException ex){
                 throw new ApiExceptionBuilder()
@@ -65,14 +65,14 @@ public class CompanyService {
     public void update(BigPictureAO bigPictureAO) {
         ZonedDateTime now = ZonedDateTime.now(ZoneOffset.UTC);
         Optional<VertexCompanyDO> company =
-                vertexService.getVertex(VertexCompanyDO.COLLECTION, bigPictureAO.getDomain());
+                vertexService.get(VertexCompanyDO.COLLECTION, bigPictureAO.getDomain());
         if (company.isEmpty() || company.get().getCached().isBefore(now.minusDays(30))) {
             VertexCompanyDO cacheDO = mergeBigPicture(
                     company.isEmpty() ? new VertexCompanyDO() : company.get(),
                     bigPictureAO);
             cacheDO.setId(bigPictureAO.getDomain());
             cacheDO.setCached(now);
-            vertexService.upsertVertex(cacheDO);
+            vertexService.upsert(cacheDO);
         }
     }
 

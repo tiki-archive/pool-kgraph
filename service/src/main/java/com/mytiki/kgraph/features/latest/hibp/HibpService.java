@@ -70,11 +70,11 @@ public class HibpService {
                         .map(this::map)
                         .collect(Collectors.toList());
                 doList.forEach(dataBreachDO -> {
-                    dataBreachDO = vertexService.upsertVertex(dataBreachDO);
+                    dataBreachDO = vertexService.upsert(dataBreachDO);
                     VertexCompanyDO companyDO = new VertexCompanyDO();
                     companyDO.setId(dataBreachDO.getDomain());
-                    companyDO = vertexService.upsertVertex(companyDO);
-                    edgeService.upsertEdge(dataBreachDO, companyDO, "TIKI");
+                    companyDO = vertexService.upsert(companyDO);
+                    edgeService.upsert(dataBreachDO, companyDO, "TIKI");
                 });
                 syncService.upsert(SyncEnum.HIBP_CACHED, now.toEpochSecond());
             }

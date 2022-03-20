@@ -29,6 +29,6 @@ public class VertexController {
     @RolesAllowed({Constants.ROLE_USER, Constants.ROLE_CUSTOMER})
     @RequestMapping(method = RequestMethod.GET)
     public ApiReplyAO<?> get() {
-        return ApiReplyAOFactory.ok(vertexService.getVertexTypes());
+        return ApiReplyAOFactory.ok(vertexService.schema());
     }
 }

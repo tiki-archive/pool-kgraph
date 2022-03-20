@@ -54,7 +54,7 @@ public abstract class VertexDO implements Serializable {
         return collection;
     }
 
-    public String getRawId(){
+    public String getDbId(){
         return collection + "/" + id;
     }
 
