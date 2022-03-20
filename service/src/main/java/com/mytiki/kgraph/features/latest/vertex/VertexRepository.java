@@ -26,9 +26,12 @@ public interface VertexRepository<T extends VertexDO> extends ArangoRepository<T
     @Query("LET now = DATE_ISO8601(DATE_NOW()) " +
             "FOR i IN #{#vertexList} " +
             "INSERT { _id: i.id, _key: i.key, _class: i.class, created: now, modified: now } " +
-            "INTO #collection OPTIONS #{#options} " +
+            "INTO #{#collection} OPTIONS #{#options} " +
             "RETURN NEW")
-    List<T> _insertAll(@SpelParam("vertexList") String vertexList, @SpelParam("options") String options);
+    List<T> _insertAll(
+            @SpelParam("vertexList") String vertexList,
+            @SpelParam("collection") String collection,
+            @SpelParam("options") String options);
 
     default List<T> insertAll(List<T> vertices){
         StringBuilder vertexListBuilder = new StringBuilder("[");
@@ -44,6 +47,9 @@ public interface VertexRepository<T extends VertexDO> extends ArangoRepository<T
         }
         vertexListBuilder.deleteCharAt(vertexListBuilder.lastIndexOf(","));
         vertexListBuilder.append("]");
-        return this._insertAll(vertexListBuilder.toString(), "{ overwriteMode: \"ignore\" }" );
+        return this._insertAll(
+                vertexListBuilder.toString(),
+                vertices.get(0).getCollection(),
+                "{ overwriteMode: \"ignore\" }" );
     }
 }

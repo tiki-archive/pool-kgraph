@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
-@Import({VertexLookup.class})
+@Import(VertexLookup.class)
 @EnableArangoRepositories(VertexConfig.PACKAGE_PATH)
 public class VertexConfig {
     public static final String PACKAGE_PATH = Constants.PACKAGE_FEATURES_LATEST_DOT_PATH + ".vertex";

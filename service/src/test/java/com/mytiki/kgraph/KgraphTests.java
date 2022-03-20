@@ -6,10 +6,7 @@
 package com.mytiki.kgraph;
 
 import com.mytiki.kgraph.features.latest.edge.*;
-import com.mytiki.kgraph.features.latest.vertex.VertexCompanyDO;
-import com.mytiki.kgraph.features.latest.vertex.VertexCompanyRepository;
-import com.mytiki.kgraph.features.latest.vertex.VertexDO;
-import com.mytiki.kgraph.features.latest.vertex.VertexDataBreachDO;
+import com.mytiki.kgraph.features.latest.vertex.*;
 import com.mytiki.kgraph.main.KGraphApp;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
@@ -43,6 +40,9 @@ public class KgraphTests {
 
     @Autowired
     VertexCompanyRepository companyRepository;
+
+    @Autowired
+    VertexDataBreachRepository dataBreachRepository;
     
     @Test
     public void Test_UpsertEdge_Success(){
@@ -122,6 +122,30 @@ public class KgraphTests {
         VertexCompanyDO vertexCompanyDO = new VertexCompanyDO();
         vertexCompanyDO.setId("facebook.com");
         VertexCompanyDO saved = companyRepository.upsert(vertexCompanyDO);
+        assertNotNull(saved);
+    }
+
+    @Test
+    public void Test_Graph_Success(){
+
+        EdgeAO edge1 = new EdgeAO(
+                new EdgeAOVertex("company","facebook.com"),
+                new EdgeAOVertex("occurrence","1"),
+                "abfouaeihafb");
+
+        EdgeAO edge2 = new EdgeAO(
+                new EdgeAOVertex("occurrence","1"),
+                new EdgeAOVertex("action","email"),
+                "tigeagohaeoi");
+
+        EdgeAO edge3 = new EdgeAO(
+                new EdgeAOVertex("occurrence","1"),
+                new EdgeAOVertex("date","03-19-2022"),
+                "1330tuhfnes");
+
+
+        List<EdgeAO> saved = edgeService.add(List.of(edge1, edge2, edge3));
+
         assertNotNull(saved);
     }
 }

@@ -9,7 +9,6 @@ import com.arangodb.ArangoDB;
 import com.arangodb.springframework.config.ArangoConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.convert.converter.Converter;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
@@ -22,9 +21,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
 import java.util.Base64;
-import java.util.Collection;
 
 public class ConfigArangodb implements ArangoConfiguration {
     @Value("${arangodb.host:127.0.0.1}")
@@ -82,13 +79,5 @@ public class ConfigArangodb implements ArangoConfiguration {
     @Override
     public String database() {
         return properties.getDbName();
-    }
-
-    @Override
-    public Collection<Converter<?, ?>> customConverters() {
-        Collection<Converter<?, ?>> converters = new ArrayList<>();
-        converters.add(new SyncEnumConverterToSyncEnum());
-        converters.add(new SyncEnumConverterToVPackSlice());
-        return converters;
     }
 }

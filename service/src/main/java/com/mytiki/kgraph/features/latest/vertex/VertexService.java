@@ -53,9 +53,11 @@ public class VertexService {
         Map<String, Set<VertexDO>> vertexMap = new HashMap<>();
         for (VertexDO vertex : vertices) {
             String collection = vertex.getCollection();
-            if (vertexMap.containsKey(collection))
-                vertexMap.get(collection).add(vertex);
-            else
+            if (vertexMap.containsKey(collection)) {
+                Set<VertexDO> vset = new HashSet<>(vertexMap.get(collection));
+                vset.add(vertex);
+                vertexMap.replace(collection, vset);
+            }else
                 vertexMap.put(collection, Set.of(vertex));
         }
         List<VertexDO> inserted = new ArrayList<>();

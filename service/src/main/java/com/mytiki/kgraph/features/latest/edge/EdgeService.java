@@ -35,13 +35,16 @@ public class EdgeService {
 
     public List<EdgeAO> add(List<EdgeAO> body) {
         List<EdgeDO<? extends VertexDO, ? extends VertexDO>> edges = compress(body);
-        List<VertexDO> vertices = new ArrayList<>();
-        for(EdgeDO<? extends VertexDO, ? extends VertexDO> edge : edges) {
-            vertices.add(edge.getFrom());
-            vertices.add(edge.getTo());
-        }
-        vertexService.insert(vertices);
-        return upsert(edges);
+        if(edges.size() > 0) {
+            List<VertexDO> vertices = new ArrayList<>();
+            for (EdgeDO<? extends VertexDO, ? extends VertexDO> edge : edges) {
+                vertices.add(edge.getFrom());
+                vertices.add(edge.getTo());
+            }
+            vertexService.insert(vertices);
+            return upsert(edges);
+        }else
+            return List.of();
     }
 
     public List<EdgeDO<? extends VertexDO,? extends VertexDO>> compress(List<EdgeAO> req){
@@ -63,7 +66,7 @@ public class EdgeService {
                     graphEdge.getTo().setId(edge.getTo().getId());
                     graphEdge.setFingerprints(Set.of(edge.getFingerprint()));
                     edges.put(key, graphEdge);
-                } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
+                } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException | NullPointerException e) {
                     logger.warn("Bad vertex", e);
                 }
             }
