@@ -8,7 +8,10 @@ package com.mytiki.kgraph.features.latest.vertex;
 import com.arangodb.springframework.annotation.Query;
 import com.arangodb.springframework.annotation.SpelParam;
 import com.arangodb.springframework.repository.ArangoRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mytiki.kgraph.features.latest.edge.EdgeDO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
@@ -16,14 +19,18 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 
 public interface VertexRepository<T extends VertexDO> extends ArangoRepository<T, String> {
+
     @Query("LET now = DATE_ISO8601(DATE_NOW()) " +
-            "LET vertex = @vertex " +
-            "UPSERT { value: vertex.value } " +
-            "INSERT MERGE(vertex, { created: now, modified: now }) " +
-            "UPDATE MERGE(vertex, { modified: now }) " +
+            "UPSERT { _key: @id } " +
+            "INSERT UNSET(MERGE(@vertex, { created: now, modified: now }), \"id\") " +
+            "UPDATE UNSET(MERGE(@vertex, { modified: now }), \"id\") " +
             "IN #collection " +
             "RETURN NEW")
-    T upsert(@Param("vertex") T vertex);
+    T _upsert(@Param("id") String id, @Param("vertex") T vertex);
+
+    default T upsert(T vertex) {
+        return _upsert(vertex.getId(), vertex);
+    }
 
     @Query("LET now = DATE_ISO8601(DATE_NOW()) " +
             "FOR i IN #{#idArray} " +

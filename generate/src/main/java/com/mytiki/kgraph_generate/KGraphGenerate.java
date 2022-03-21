@@ -50,6 +50,7 @@ public class KGraphGenerate {
                         fields.add(map);
                         imports.add(m.getClazz());
                     });
+                    fields.get(fields.size()-1).put("last","true");
                     placeholders.put("fields", fields);
                     placeholders.put("imports", imports);
                 }

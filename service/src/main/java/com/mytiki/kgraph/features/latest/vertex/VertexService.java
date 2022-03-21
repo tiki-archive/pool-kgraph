@@ -12,7 +12,8 @@ import com.mytiki.common.exception.ApiExceptionBuilder;
 import org.springframework.http.HttpStatus;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
 public class VertexService {
     private final ObjectMapper objectMapper;
@@ -36,6 +37,7 @@ public class VertexService {
 
     public <T extends VertexDO> Optional<T> get(String type, String id){
         VertexRepository<T> repository = getRepository(type);
+        if(repository == null) return Optional.empty();
         try {
             return repository.findById(id);
         }catch (ArangoDBException ex){
@@ -58,6 +60,7 @@ public class VertexService {
     public <T extends VertexDO> T fromType(String type)
             throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         Class<T> doClass = (Class<T>) vertexLookup.getDOClass(type);
+        if(doClass == null) throw new NoSuchMethodException();
         return doClass.getConstructor().newInstance();
     }
 

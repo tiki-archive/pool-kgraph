@@ -6,6 +6,7 @@
 package com.mytiki.kgraph.config;
 
 import com.mytiki.common.ApiConstants;
+import com.mytiki.kgraph.features.latest.vertex.VertexController;
 import com.mytiki.kgraph.utilities.ApiKeyAuthMgr;
 import com.mytiki.kgraph.utilities.ApiKeyFilter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,6 +90,7 @@ public class ConfigSecurity extends WebSecurityConfigurerAdapter {
                         .setAuthMgr(new ApiKeyAuthMgr(ingestApiKey)))
                 .authorizeRequests(authorize -> authorize
                         .antMatchers(HttpMethod.GET, ApiConstants.HEALTH_ROUTE).permitAll()
+                        .antMatchers(HttpMethod.GET, VertexController.PATH_CONTROLLER).permitAll()
                         .antMatchers(
                                 HttpMethod.POST,
                                 ApiConstants.API_LATEST_ROUTE + "big-picture"

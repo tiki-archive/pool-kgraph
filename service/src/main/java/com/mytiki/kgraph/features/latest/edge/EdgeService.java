@@ -78,7 +78,7 @@ public class EdgeService {
                     graphEdge.getTo().setId(edge.getTo().getId());
                     graphEdge.setFingerprints(Set.of(edge.getFingerprint()));
                     edges.put(key, graphEdge);
-                } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException | NullPointerException e) {
+                } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
                     logger.warn("Bad vertex", e);
                 }
             }

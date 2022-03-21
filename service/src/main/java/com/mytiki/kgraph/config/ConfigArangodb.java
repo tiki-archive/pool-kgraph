@@ -6,6 +6,7 @@
 package com.mytiki.kgraph.config;
 
 import com.arangodb.ArangoDB;
+import com.arangodb.springframework.annotation.EnableArangoAuditing;
 import com.arangodb.springframework.config.ArangoConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,6 +24,7 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.Base64;
 
+@EnableArangoAuditing
 public class ConfigArangodb implements ArangoConfiguration {
     @Value("${arangodb.host:127.0.0.1}")
     String host;
