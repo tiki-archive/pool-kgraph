@@ -54,12 +54,32 @@ public class EdgeService {
                 vmap.put(collection, vlist);
             });
             vmap.forEach((k,v) -> vertexService.insert(v));
-            return upsert(edges);
+            return edgeRepository.upsertAll(edges).stream().map(e -> new EdgeAO(
+                    new EdgeAOVertex(e.getFrom().getCollection(), e.getFrom().getId()),
+                    new EdgeAOVertex(e.getTo().getCollection(), e.getTo().getId()),
+                    null
+            )).collect(Collectors.toList());
         }else
             return List.of();
     }
 
-    public List<EdgeDO<? extends VertexDO,? extends VertexDO>> compress(List<EdgeAO> req){
+    public <F extends VertexDO, T extends VertexDO> EdgeDO<F, T> upsert(F from, T to, String fingerprint) {
+        return edgeRepository.upsert(from.getDbId(), to.getDbId(), Set.of(fingerprint));
+    }
+
+    public List<EdgeDO<? extends VertexDO, ? extends VertexDO>>
+    traverse(String type, String id, Integer depth){
+        try {
+            VertexDO vertex = vertexService.fromType(type);
+            vertex.setId(id);
+            return edgeRepository.traverse(vertex.getDbId(), depth);
+        }catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e) {
+            logger.warn("Bad vertex", e);
+            return List.of();
+        }
+    }
+
+    private List<EdgeDO<? extends VertexDO,? extends VertexDO>> compress(List<EdgeAO> req){
         Map<String, EdgeDO<? extends VertexDO, ? extends VertexDO>> edges = new HashMap<>();
         for(EdgeAO edge : req){
             String fKey = edge.getFrom().getType() + ":" + edge.getFrom().getId();
@@ -84,32 +104,5 @@ public class EdgeService {
             }
         }
         return new ArrayList<>(edges.values());
-    }
-
-    public EdgeDO<? extends VertexDO, ? extends VertexDO> upsert(
-            VertexDO from, VertexDO to, String fingerprint) {
-        EdgeDO<VertexDO, VertexDO> edge = new EdgeDO<>();
-        edge.setFingerprints(Set.of(fingerprint));
-        edge.setFrom(from);
-        edge.setTo(to);
-        return edgeRepository.upsert(edge);
-    }
-
-    public List<EdgeAO> upsert(
-            List<EdgeDO<? extends VertexDO, ? extends VertexDO>> edges) {
-        return edgeRepository.upsertAll(edges).stream().map(e -> new EdgeAO(
-                new EdgeAOVertex(e.getFrom().getCollection(), e.getFrom().getId()),
-                new EdgeAOVertex(e.getTo().getCollection(), e.getTo().getId()),
-                null
-        )).collect(Collectors.toList());
-    }
-
-    public List<EdgeDO<? extends VertexDO, ? extends VertexDO>>
-    traverse(String type, String value, Integer depth){
-        Optional<VertexDO> start = vertexService.get(type, value);
-        if(start.isPresent()) {
-            return edgeRepository.traverse(start.get().getDbId(), depth, configProperties.getEpsilon());
-        }else
-            return List.of();
     }
 }

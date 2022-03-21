@@ -13,39 +13,38 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface EdgeRepository extends
         ArangoRepository<EdgeDO<? extends VertexDO, ? extends VertexDO>, String> {
 
     @Query("FOR e IN #collection FILTER e._from == @from AND e._to == @to RETURN e")
-    <F extends VertexDO, T extends VertexDO> Optional<EdgeDO<F,T>>
-    findByVertices(@Param("from") String from, @Param("to") String to);
+    <F extends VertexDO, T extends VertexDO> Optional<EdgeDO<F,T>> findByVertices(
+            @Param("from") String from, @Param("to") String to);
 
-    List<EdgeDO<? extends VertexDO, ? extends VertexDO>> findByFingerprintsContains(String fingerprint);
+    @Query("FOR v,e,p IN 1..@depth ANY @start GRAPH kgraph RETURN e")
+    List<EdgeDO<? extends VertexDO, ? extends VertexDO>> traverse(String start, int depth);
 
-    @Query("FOR v,e,p IN 1..@depth INBOUND @start GRAPH kgraph FILTER p.edges[*].weight ALL <= @epsilon RETURN e")
-    List<EdgeDO<? extends VertexDO, ? extends VertexDO>> traverse(String start, int depth, Integer epsilon);
-
-    @Query("FOR v,e,p IN ANY SHORTEST_PATH @start TO @end GRAPH kgraph OPTIONS {weightAttribute: 'weight'} FILTER e != null AND e.weight <= @epsilon RETURN e")
+    @Query("FOR v,e,p IN ANY SHORTEST_PATH @start TO @end GRAPH kgraph OPTIONS {weightAttribute: 'weight'} FILTER e != null RETURN e")
     List<EdgeDO<? extends VertexDO, ? extends VertexDO>> shortestPath(String start, String end, Integer epsilon);
 
     @Query("LET now = DATE_ISO8601(DATE_NOW()) " +
-            "UPSERT { _from: \"#{#edge.from.id}\", _to: \"#{#edge.to.id}\" } " +
+            "UPSERT { _from: @from, _to: @to } " +
             "INSERT { " +
-                "_from: \"#{#edge.from.id}\", " +
-                "_to: \"#{#edge.to.id}\", " +
+                "_from: @from, " +
+                "_to: @to, " +
                 "created: now, " +
                 "modified: now, " +
-                "fingerprints: [ \"#{#edge.fingerprints}\" ], " +
+                "fingerprints: @fingerprints, " +
                 "weight: 1 } " +
             "UPDATE { " +
-                "fingerprints: APPEND(OLD.fingerprints, [ \"#{#edge.fingerprints}\" ], true), " +
-                "weight: 1.0/LENGTH(APPEND(OLD.fingerprints, [ \"#{#edge.fingerprints}\" ], true)), " +
+                "fingerprints: APPEND(OLD.fingerprints, @fingerprints, true), " +
+                "weight: 1.0/LENGTH(APPEND(OLD.fingerprints, @fingerprints, true)), " +
                 "modified: now } " +
             "IN #collection " +
             "RETURN NEW")
-    EdgeDO<? extends VertexDO, ? extends VertexDO> upsert(
-            @SpelParam("edge") EdgeDO<? extends VertexDO, ? extends VertexDO> edge);
+    <F extends VertexDO, T extends VertexDO> EdgeDO<F,T> upsert(
+            @Param("from") String from, @Param("to") String to, @Param("fingerprints") Set<String> fingerprints);
 
     @Query("LET now = DATE_ISO8601(DATE_NOW()) " +
             "FOR i IN #{#edgeList}" +
