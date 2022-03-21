@@ -18,10 +18,7 @@ public class SyncService {
     }
 
     public <T> SyncDO<T> upsert(SyncEnum sync, T value){
-        SyncDO<T> save = new SyncDO<T>();
-        save.setId(sync.toString());
-        save.setValue(value);
-        return repository.upsert(save);
+        return repository.upsert(sync.toString(), value);
     }
 
     public <T> Optional<SyncDO<T>> get(SyncEnum sync){
