@@ -49,20 +49,9 @@ public class VertexService {
         return repository.upsert(vertex);
     }
 
-    public List<VertexDO> insert(List<VertexDO> vertices){
-        Map<String, Set<VertexDO>> vertexMap = new HashMap<>();
-        for (VertexDO vertex : vertices) {
-            String collection = vertex.getCollection();
-            if (vertexMap.containsKey(collection)) {
-                Set<VertexDO> vset = new HashSet<>(vertexMap.get(collection));
-                vset.add(vertex);
-                vertexMap.replace(collection, vset);
-            }else
-                vertexMap.put(collection, Set.of(vertex));
-        }
-        List<VertexDO> inserted = new ArrayList<>();
-        vertexMap.forEach((k,v) -> inserted.addAll(getRepository(k).insertAll(new ArrayList<>(v))));
-        return inserted;
+    public <T extends VertexDO> List<T> insert (List<T> vertices){
+        VertexRepository<T> repository = getRepository(vertices.get(0).getCollection());
+        return repository.insertAll(vertices);
     }
 
     @SuppressWarnings("unchecked")

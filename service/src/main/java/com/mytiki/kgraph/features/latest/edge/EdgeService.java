@@ -36,12 +36,24 @@ public class EdgeService {
     public List<EdgeAO> add(List<EdgeAO> body) {
         List<EdgeDO<? extends VertexDO, ? extends VertexDO>> edges = compress(body);
         if(edges.size() > 0) {
-            List<VertexDO> vertices = new ArrayList<>();
+            Set<String> collections = new HashSet<>();
             for (EdgeDO<? extends VertexDO, ? extends VertexDO> edge : edges) {
-                vertices.add(edge.getFrom());
-                vertices.add(edge.getTo());
+                collections.add(edge.getFrom().getCollection());
+                collections.add(edge.getTo().getCollection());
             }
-            vertexService.insert(vertices);
+            Map<String, List<? extends VertexDO>> vmap = new HashMap<>();
+            collections.forEach(collection -> {
+                List<? extends VertexDO> vlist = Stream.concat(
+                        edges.stream()
+                                .filter(e -> e.getFrom().getCollection().equals(collection))
+                                .map(EdgeDO::getFrom),
+                        edges.stream()
+                                .filter(e -> e.getTo().getCollection().equals(collection))
+                                .map(EdgeDO::getTo))
+                        .collect(Collectors.toList());
+                vmap.put(collection, vlist);
+            });
+            vmap.forEach((k,v) -> vertexService.insert(v));
             return upsert(edges);
         }else
             return List.of();

@@ -16,6 +16,7 @@ import java.util.Optional;
 
 public interface EdgeRepository extends
         ArangoRepository<EdgeDO<? extends VertexDO, ? extends VertexDO>, String> {
+
     @Query("FOR e IN #collection FILTER e._from == @from AND e._to == @to RETURN e")
     <F extends VertexDO, T extends VertexDO> Optional<EdgeDO<F,T>>
     findByVertices(@Param("from") String from, @Param("to") String to);
@@ -49,7 +50,7 @@ public interface EdgeRepository extends
     @Query("LET now = DATE_ISO8601(DATE_NOW()) " +
             "FOR i IN #{#edgeList}" +
             "UPSERT { _from: i.from, _to: i.to } " +
-            "INSERT { _from: i.from, _to: i.to, _class: i.class, created: now, modified: now, fingerprints: i.fingerprints, weight: i.weight } " +
+            "INSERT { _from: i.from, _to: i.to, created: now, modified: now, fingerprints: i.fingerprints, weight: i.weight } " +
             "UPDATE { fingerprints: APPEND(OLD.fingerprints, i.fingerprints, true), weight: 1.0/LENGTH(APPEND(OLD.fingerprints, i.fingerprints, true)), modified: now } " +
             "IN #collection " +
             "RETURN NEW")
@@ -69,8 +70,6 @@ public interface EdgeRepository extends
                     .append(edge.getFrom().getDbId())
                     .append("\", to: \"")
                     .append(edge.getTo().getDbId())
-                    .append("\", class: \"")
-                    .append(edge.getClass())
                     .append("\", fingerprints: ")
                     .append(fpListBuilder)
                     .append(",weight: ")

@@ -12,6 +12,8 @@ import com.mytiki.kgraph.features.latest.edge.EdgeDO;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Locale;
+import java.util.stream.Collectors;
 
 public interface VertexRepository<T extends VertexDO> extends ArangoRepository<T, String> {
     @Query("LET now = DATE_ISO8601(DATE_NOW()) " +
@@ -24,32 +26,19 @@ public interface VertexRepository<T extends VertexDO> extends ArangoRepository<T
     T upsert(@Param("vertex") T vertex);
 
     @Query("LET now = DATE_ISO8601(DATE_NOW()) " +
-            "FOR i IN #{#vertexList} " +
-            "INSERT { _id: i.id, _key: i.key, _class: i.class, created: now, modified: now } " +
-            "INTO #{#collection} OPTIONS #{#options} " +
+            "FOR i IN #{#idArray} " +
+            "INSERT { _key: i, _class: \"#{#clazz}\", created: now, modified: now } " +
+            "INTO #collection OPTIONS #{#options} " +
             "RETURN NEW")
     List<T> _insertAll(
-            @SpelParam("vertexList") String vertexList,
-            @SpelParam("collection") String collection,
+            @SpelParam("idArray") String idArray,
+            @SpelParam("clazz") String clazz,
             @SpelParam("options") String options);
 
     default List<T> insertAll(List<T> vertices){
-        StringBuilder vertexListBuilder = new StringBuilder("[");
-        for(VertexDO vertex : vertices) {
-            vertexListBuilder.append("{")
-                    .append("id: \"")
-                    .append(vertex.getDbId())
-                    .append("\", key: \"")
-                    .append(vertex.getId())
-                    .append("\", class: \"")
-                    .append(vertex.getClass().getName())
-                    .append("\"},");
-        }
-        vertexListBuilder.deleteCharAt(vertexListBuilder.lastIndexOf(","));
-        vertexListBuilder.append("]");
         return this._insertAll(
-                vertexListBuilder.toString(),
-                vertices.get(0).getCollection(),
+                "[" + vertices.stream().map(v -> "\"" + v.getId() + "\"").collect(Collectors.joining(",")) + "]",
+                vertices.get(0).getClass().getName(),
                 "{ overwriteMode: \"ignore\" }" );
     }
 }

@@ -143,8 +143,18 @@ public class KgraphTests {
                 new EdgeAOVertex("date","03-19-2022"),
                 "1330tuhfnes");
 
+        EdgeAO edge4 = new EdgeAO(
+                new EdgeAOVertex("company","google.com"),
+                new EdgeAOVertex("occurrence","2"),
+                "abfouaeihafb");
 
-        List<EdgeAO> saved = edgeService.add(List.of(edge1, edge2, edge3));
+        EdgeAO edge5 = new EdgeAO(
+                new EdgeAOVertex("occurrence","2"),
+                new EdgeAOVertex("action","email"),
+                "tigeagohaeoi");
+
+
+        List<EdgeAO> saved = edgeService.add(List.of(edge1, edge2, edge3, edge4, edge5));
 
         assertNotNull(saved);
     }
