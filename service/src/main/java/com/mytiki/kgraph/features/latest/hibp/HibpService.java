@@ -1,9 +1,14 @@
 package com.mytiki.kgraph.features.latest.hibp;
 
-import com.mytiki.kgraph.features.latest.graph.*;
+import com.mytiki.kgraph.features.latest.edge.EdgeDO;
+import com.mytiki.kgraph.features.latest.edge.EdgeService;
 import com.mytiki.kgraph.features.latest.sync.SyncDO;
 import com.mytiki.kgraph.features.latest.sync.SyncEnum;
 import com.mytiki.kgraph.features.latest.sync.SyncService;
+import com.mytiki.kgraph.features.latest.vertex.VertexCompanyDO;
+import com.mytiki.kgraph.features.latest.vertex.VertexDO;
+import com.mytiki.kgraph.features.latest.vertex.VertexDataBreachDO;
+import com.mytiki.kgraph.features.latest.vertex.VertexService;
 import io.sentry.Sentry;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
@@ -11,7 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.client.RestTemplate;
 
-import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Instant;
@@ -29,12 +33,18 @@ public class HibpService {
     private static final String IS_SENSITIVE = "isSensitive";
 
     private final RestTemplate restTemplate;
-    private final GraphService graphService;
+    private final VertexService vertexService;
+    private final EdgeService edgeService;
     private final SyncService syncService;
 
-    public HibpService(RestTemplate restTemplate, GraphService graphService, SyncService syncService) {
+    public HibpService(
+            RestTemplate restTemplate,
+            VertexService vertexService,
+            EdgeService edgeService,
+            SyncService syncService) {
         this.restTemplate = restTemplate;
-        this.graphService = graphService;
+        this.vertexService = vertexService;
+        this.edgeService = edgeService;
         this.syncService = syncService;
     }
 
@@ -54,38 +64,32 @@ public class HibpService {
             if (rsp.getStatusCode().is2xxSuccessful() && rsp.getBody() != null) {
                 flagEmptyClasses(rsp.getBody());
                 flagUnknownClass(rsp.getBody());
-                List<GraphVertexDataBreachDO> doList = rsp.getBody().stream()
+                List<VertexDataBreachDO> doList = rsp.getBody().stream()
                         .filter(hibpAO -> (hibpAO.getName() != null && hibpAO.getDomain() != null))
                         .filter(hibpAO -> hibpAO.getModifiedDate().isAfter(lastCached.toLocalDate()))
                         .map(this::map)
                         .collect(Collectors.toList());
                 doList.forEach(dataBreachDO -> {
-                    graphService.upsertVertex(dataBreachDO);
-                    try {
-                        graphService.upsertEdge(
-                                dataBreachDO.getCollection(),
-                                dataBreachDO.getValue(),
-                                GraphVertexCompanyDO.COLLECTION,
-                                dataBreachDO.getDomain(),
-                                "TIKI");
-                    }catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e) {
-                        Sentry.captureException(e);
-                    }
+                    dataBreachDO = vertexService.upsert(dataBreachDO);
+                    VertexCompanyDO companyDO = new VertexCompanyDO();
+                    companyDO.setId(dataBreachDO.getDomain());
+                    companyDO = vertexService.upsert(companyDO);
+                    edgeService.upsert(dataBreachDO, companyDO, "TIKI");
                 });
                 syncService.upsert(SyncEnum.HIBP_CACHED, now.toEpochSecond());
             }
         }
     }
 
-    public List<GraphVertexDataBreachDO> findByDomain(String domain){
-        List<GraphEdgeDO<? extends GraphVertexDO, ? extends GraphVertexDO>> edges =
-                graphService.traverse(GraphVertexCompanyDO.COLLECTION, domain, 1);
-        Set<GraphVertexDataBreachDO> breachSet = new HashSet<>();
+    public List<VertexDataBreachDO> findByDomain(String domain){
+        List<EdgeDO<? extends VertexDO, ? extends VertexDO>> edges =
+                edgeService.traverse(VertexCompanyDO.COLLECTION, domain, 1);
+        Set<VertexDataBreachDO> breachSet = new HashSet<>();
         edges.forEach(edge -> {
-            if(edge.getTo().getCollection().equals(GraphVertexDataBreachDO.COLLECTION))
-                breachSet.add((GraphVertexDataBreachDO) edge.getTo());
-            if(edge.getFrom().getCollection().equals(GraphVertexDataBreachDO.COLLECTION))
-                breachSet.add((GraphVertexDataBreachDO) edge.getFrom());
+            if(edge.getTo().getCollection().equals(VertexDataBreachDO.COLLECTION))
+                breachSet.add((VertexDataBreachDO) edge.getTo());
+            if(edge.getFrom().getCollection().equals(VertexDataBreachDO.COLLECTION))
+                breachSet.add((VertexDataBreachDO) edge.getFrom());
         });
         return new ArrayList<>(breachSet);
     }
@@ -120,9 +124,9 @@ public class HibpService {
         return typeList;
     }
 
-    private GraphVertexDataBreachDO map(HibpAO hibpAO){
-        GraphVertexDataBreachDO dataBreachDO = new GraphVertexDataBreachDO();
-        dataBreachDO.setValue(hibpAO.getName());
+    private VertexDataBreachDO map(HibpAO hibpAO){
+        VertexDataBreachDO dataBreachDO = new VertexDataBreachDO();
+        dataBreachDO.setId(hibpAO.getName());
         dataBreachDO.setDomain(hibpAO.getDomain());
         dataBreachDO.setBreached(ZonedDateTime.of(hibpAO.getBreachDate(),
                 LocalTime.MIDNIGHT, ZoneOffset.UTC));

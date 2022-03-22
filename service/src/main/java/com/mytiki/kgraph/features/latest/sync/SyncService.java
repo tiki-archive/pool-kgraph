@@ -18,21 +18,16 @@ public class SyncService {
     }
 
     public <T> SyncDO<T> upsert(SyncEnum sync, T value){
-        SyncDO<T> save = new SyncDO<T>();
-        save.setName(sync);
-        save.setValue(value);
-        Optional<SyncDO<T>> existing = get(sync);
-        existing.ifPresent(syncDO -> save.setId(syncDO.getId()));
-        return repository.save(save);
+        return repository.upsert(sync.toString(), value);
     }
 
     public <T> Optional<SyncDO<T>> get(SyncEnum sync){
         try {
-            return repository.findByName(sync);
+            Optional<SyncDO<?>> optional = repository.findById(sync.toString());
+            return optional.map(syncDO -> (SyncDO<T>) syncDO);
         }catch (ArangoDBException ex){
             if(ex.getErrorNum() == 1203) return Optional.empty();
             else throw ex;
         }
-
     }
 }

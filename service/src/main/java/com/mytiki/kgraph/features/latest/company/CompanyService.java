@@ -5,10 +5,10 @@ import com.mytiki.common.reply.ApiReplyAOMessageBuilder;
 import com.mytiki.kgraph.features.latest.big_picture.BigPictureAO;
 import com.mytiki.kgraph.features.latest.big_picture.BigPictureException;
 import com.mytiki.kgraph.features.latest.big_picture.BigPictureService;
-import com.mytiki.kgraph.features.latest.graph.GraphService;
-import com.mytiki.kgraph.features.latest.graph.GraphVertexCompanyDO;
-import com.mytiki.kgraph.features.latest.graph.GraphVertexDataBreachDO;
 import com.mytiki.kgraph.features.latest.hibp.HibpService;
+import com.mytiki.kgraph.features.latest.vertex.VertexCompanyDO;
+import com.mytiki.kgraph.features.latest.vertex.VertexDataBreachDO;
+import com.mytiki.kgraph.features.latest.vertex.VertexService;
 import org.springframework.http.HttpStatus;
 
 import java.math.BigDecimal;
@@ -21,30 +21,32 @@ import java.util.Optional;
 public class CompanyService {
     private final BigPictureService bigPictureService;
     private final HibpService hibpService;
-    private final GraphService graphService;
+    private final VertexService vertexService;
 
-
-    public CompanyService(BigPictureService bigPictureService, HibpService hibpService, GraphService graphService) {
+    public CompanyService(
+            BigPictureService bigPictureService,
+            HibpService hibpService,
+            VertexService vertexService) {
         this.bigPictureService = bigPictureService;
         this.hibpService = hibpService;
-        this.graphService = graphService;
+        this.vertexService = vertexService;
     }
 
     public CompanyAO findByDomain(String domain) {
         ZonedDateTime now = ZonedDateTime.now(ZoneOffset.UTC);
-        Optional<GraphVertexCompanyDO> company = graphService.getVertex(GraphVertexCompanyDO.COLLECTION, domain);
+        Optional<VertexCompanyDO> company = vertexService.get(VertexCompanyDO.COLLECTION, domain);
         if (
                 company.isEmpty() ||
                 company.get().getCached() == null ||
                 company.get().getCached().isBefore(now.minusDays(30))) {
             try {
                 BigPictureAO bigPictureAO = bigPictureService.find(domain);
-                GraphVertexCompanyDO cacheDO = mergeBigPicture(
-                        company.isEmpty() ? new GraphVertexCompanyDO() : company.get(),
+                VertexCompanyDO cacheDO = mergeBigPicture(
+                        company.isEmpty() ? new VertexCompanyDO() : company.get(),
                         bigPictureAO);
                 cacheDO.setCached(now);
-                cacheDO.setValue(domain);
-                cacheDO = graphService.upsertVertex(cacheDO);
+                cacheDO.setId(domain);
+                cacheDO = vertexService.upsert(cacheDO);
                 return toAO(cacheDO, hibpService.findByDomain(domain));
             }catch (BigPictureException ex){
                 throw new ApiExceptionBuilder()
@@ -62,19 +64,19 @@ public class CompanyService {
 
     public void update(BigPictureAO bigPictureAO) {
         ZonedDateTime now = ZonedDateTime.now(ZoneOffset.UTC);
-        Optional<GraphVertexCompanyDO> company =
-                graphService.getVertex(GraphVertexCompanyDO.COLLECTION, bigPictureAO.getDomain());
+        Optional<VertexCompanyDO> company =
+                vertexService.get(VertexCompanyDO.COLLECTION, bigPictureAO.getDomain());
         if (company.isEmpty() || company.get().getCached().isBefore(now.minusDays(30))) {
-            GraphVertexCompanyDO cacheDO = mergeBigPicture(
-                    company.isEmpty() ? new GraphVertexCompanyDO() : company.get(),
+            VertexCompanyDO cacheDO = mergeBigPicture(
+                    company.isEmpty() ? new VertexCompanyDO() : company.get(),
                     bigPictureAO);
-            cacheDO.setValue(bigPictureAO.getDomain());
+            cacheDO.setId(bigPictureAO.getDomain());
             cacheDO.setCached(now);
-            graphService.upsertVertex(cacheDO);
+            vertexService.upsert(cacheDO);
         }
     }
 
-    private GraphVertexCompanyDO mergeBigPicture(GraphVertexCompanyDO company, BigPictureAO bigPictureAO){
+    private VertexCompanyDO mergeBigPicture(VertexCompanyDO company, BigPictureAO bigPictureAO){
         company.setAddress(bigPictureAO.getLocation());
         company.setDescription(bigPictureAO.getDescription());
         company.setName(bigPictureAO.getName());
@@ -96,10 +98,10 @@ public class CompanyService {
         return company;
     }
 
-    private CompanyAO toAO(GraphVertexCompanyDO companyDO, List<GraphVertexDataBreachDO> breaches) {
+    private CompanyAO toAO(VertexCompanyDO companyDO, List<VertexDataBreachDO> breaches) {
         CompanyAOAbout about = new CompanyAOAbout();
         about.setAddress(companyDO.getAddress());
-        about.setDomain(companyDO.getValue());
+        about.setDomain(companyDO.getId());
         about.setName(companyDO.getName());
         about.setDescription(companyDO.getDescription());
         about.setLogo(companyDO.getLogo());
@@ -132,9 +134,9 @@ public class CompanyService {
         return companyAO;
     }
 
-    private BigDecimal consolidateBreachScore(List<GraphVertexDataBreachDO> breaches){
+    private BigDecimal consolidateBreachScore(List<VertexDataBreachDO> breaches){
         BigDecimal score = BigDecimal.valueOf(0);
-        for(GraphVertexDataBreachDO hibpDO : breaches){
+        for(VertexDataBreachDO hibpDO : breaches){
             score = score.add(hibpDO.getComboScore());
         }
         if(score.compareTo(BigDecimal.valueOf(1)) > 0 ) score = BigDecimal.valueOf(1);

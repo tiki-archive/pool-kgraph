@@ -10,7 +10,7 @@ import com.mytiki.kgraph.utilities.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 
-@EnableArangoRepositories(basePackages = {SyncConfig.PACKAGE_PATH})
+@EnableArangoRepositories(SyncConfig.PACKAGE_PATH)
 public class SyncConfig {
     public static final String PACKAGE_PATH = Constants.PACKAGE_FEATURES_LATEST_DOT_PATH + ".sync";
 

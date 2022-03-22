@@ -21,9 +21,9 @@ import java.util.*;
 public class KGraphGenerate {
     public static void main(final String... args) {
         MustacheFactory mustacheFactory = new DefaultMustacheFactory();
-        Mustache doMustache = mustacheFactory.compile("com/mytiki/kgraph_generate/GraphVertexDO.mustache");
-        Mustache repositoryMustache = mustacheFactory.compile("com/mytiki/kgraph_generate/GraphVertexRepository.mustache");
-        Mustache lookupMustache = mustacheFactory.compile("com/mytiki/kgraph_generate/GraphVertexLookup.mustache");
+        Mustache doMustache = mustacheFactory.compile("com/mytiki/kgraph_generate/VertexDO.mustache");
+        Mustache repositoryMustache = mustacheFactory.compile("com/mytiki/kgraph_generate/VertexRepository.mustache");
+        Mustache lookupMustache = mustacheFactory.compile("com/mytiki/kgraph_generate/VertexLookup.mustache");
         try {
             KGraphDefs defs = load();
             Map<String, List<Map<String,Object>>> lookupPlaceholders = new HashMap<>(1);
@@ -50,6 +50,7 @@ public class KGraphGenerate {
                         fields.add(map);
                         imports.add(m.getClazz());
                     });
+                    fields.get(fields.size()-1).put("last","true");
                     placeholders.put("fields", fields);
                     placeholders.put("imports", imports);
                 }
@@ -57,8 +58,8 @@ public class KGraphGenerate {
                 try {
                     String doString = render(doMustache, placeholders);
                     String repositoryString = render(repositoryMustache, placeholders);
-                    write(doString, "GraphVertex" + vertexPascal + "DO");
-                    write(repositoryString, "GraphVertex" + vertexPascal + "Repository");
+                    write(doString, "Vertex" + vertexPascal + "DO");
+                    write(repositoryString, "Vertex" + vertexPascal + "Repository");
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -66,7 +67,7 @@ public class KGraphGenerate {
             lookupList.get(lookupList.size()-1).put("last","true");
             lookupPlaceholders.put("vertices", lookupList);
             String lookupString = render(lookupMustache, lookupPlaceholders);
-            write(lookupString, "GraphVertexLookup");
+            write(lookupString, "VertexLookup");
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -90,7 +91,7 @@ public class KGraphGenerate {
 
     private static void write(String content, String filename) throws IOException {
         String sources = "service/target/generated-sources/";
-        String dir = sources + "java/com/mytiki/kgraph/features/latest/graph/";
+        String dir = sources + "java/com/mytiki/kgraph/features/latest/vertex/";
         if(!Files.isDirectory(Paths.get(dir)))
             Files.createDirectories(Paths.get(dir));
         Files.write(Paths.get(dir + filename + ".java"), content.getBytes());

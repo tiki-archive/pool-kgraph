@@ -1,8 +1,8 @@
 package com.mytiki.kgraph.features.latest.company;
 
 import com.mytiki.kgraph.features.latest.big_picture.BigPictureService;
-import com.mytiki.kgraph.features.latest.graph.GraphService;
 import com.mytiki.kgraph.features.latest.hibp.HibpService;
+import com.mytiki.kgraph.features.latest.vertex.VertexService;
 import com.mytiki.kgraph.utilities.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -19,7 +19,7 @@ public class CompanyConfig {
     public CompanyService companyService(
             @Autowired BigPictureService bigPictureService,
             @Autowired HibpService hibpService,
-            @Autowired GraphService graphService){
-        return new CompanyService(bigPictureService, hibpService, graphService);
+            @Autowired VertexService vertexService){
+        return new CompanyService(bigPictureService, hibpService, vertexService);
     }
 }

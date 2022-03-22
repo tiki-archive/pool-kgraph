@@ -43,8 +43,6 @@ vertices:
         clazz: java.lang.String
       - name: breached
         clazz: java.time.ZonedDateTime
-      - name: modified
-        clazz: java.time.ZonedDateTime
       - name: pwnCount
         clazz: java.lang.Integer
       - name: pwnScore
@@ -61,6 +59,10 @@ vertices:
         clazz: java.math.BigDecimal
       - name: comboScore
         clazz: java.math.BigDecimal
+  - type: occurrence
+  - type: action
+  - type: date
+  - type: subject
 
 # Supported Classes (https://www.arangodb.com/docs/stable/drivers/spring-data-reference-mapping.html)
 # java.lang.String

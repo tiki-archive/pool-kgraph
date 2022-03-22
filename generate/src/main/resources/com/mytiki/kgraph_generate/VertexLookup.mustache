@@ -3,7 +3,7 @@
 * MIT license. See LICENSE file in root directory.
 */
 
-package com.mytiki.kgraph.features.latest.graph;
+package com.mytiki.kgraph.features.latest.vertex;
 
 import com.arangodb.springframework.repository.ArangoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,15 +12,15 @@ import java.util.Set;
 import java.util.List;
 
 @Component
-public class GraphVertexLookup {
+public class VertexLookup {
 {{#vertices}}
-    private final GraphVertex{{{type_pascal}}}Repository {{{type_camel}}}Repository;
+    private final Vertex{{{type_pascal}}}Repository {{{type_camel}}}Repository;
 {{/vertices}}
 
     @Autowired
-    public GraphVertexLookup(
+    public VertexLookup(
 {{#vertices}}
-        GraphVertex{{{type_pascal}}}Repository {{{type_camel}}}Repository{{^last}}, {{/last}}
+        Vertex{{{type_pascal}}}Repository {{{type_camel}}}Repository{{^last}}, {{/last}}
 {{/vertices}}
     ){
 {{#vertices}}
@@ -28,18 +28,18 @@ public class GraphVertexLookup {
 {{/vertices}}
     }
 
-    public Class<? extends GraphVertexDO> getDOClass(String type){
+    public Class<? extends VertexDO> getDOClass(String type){
         switch (type){
 {{#vertices}}
             case "{{{type_camel}}}":
-                return GraphVertex{{{type_pascal}}}DO.class;
+                return Vertex{{{type_pascal}}}DO.class;
 {{/vertices}}
             default:
                 return null;
         }
     }
 
-    public GraphVertexRepository<? extends GraphVertexDO> getRepository(String type){
+    public VertexRepository<? extends VertexDO> getRepository(String type){
         switch (type){
 {{#vertices}}
             case "{{{type_camel}}}":
@@ -51,7 +51,7 @@ public class GraphVertexLookup {
     }
 
     public String getSchema(){
-        return "[{{#vertices}}{\"type\": \"{{type_camel}}\",\"fields\":[{\"name\":\"value\",\"dataType\":\"string\"}{{#fields}},{\"name\":\"{{name_camel}}\",\"dataType\":\"{{type_json}}{{#collection_json}}[{{{.}}}]{{/collection_json}}\"}{{/fields}}]}{{^last}},{{/last}}{{/vertices}}]";
+        return "[{{#vertices}}{\"type\": \"{{type_camel}}\",\"fields\":[{{#fields}}{\"name\":\"{{name_camel}}\",\"dataType\":\"{{type_json}}{{#collection_json}}[{{{.}}}]{{/collection_json}}\"}{{^last}},{{/last}}{{/fields}}]}{{^last}},{{/last}}{{/vertices}}]";
     }
 {{=<% %>=}}
     public String[] getVertices(){

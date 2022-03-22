@@ -6,12 +6,10 @@
 package com.mytiki.kgraph.config;
 
 import com.arangodb.ArangoDB;
+import com.arangodb.springframework.annotation.EnableArangoAuditing;
 import com.arangodb.springframework.config.ArangoConfiguration;
-import com.mytiki.kgraph.features.latest.sync.SyncEnumConverterToSyncEnum;
-import com.mytiki.kgraph.features.latest.sync.SyncEnumConverterToVPackSlice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.convert.converter.Converter;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
@@ -24,10 +22,9 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
 import java.util.Base64;
-import java.util.Collection;
 
+@EnableArangoAuditing
 public class ConfigArangodb implements ArangoConfiguration {
     @Value("${arangodb.host:127.0.0.1}")
     String host;
@@ -72,8 +69,6 @@ public class ConfigArangodb implements ArangoConfiguration {
                 ks.setCertificateEntry("caCert", caCert);
                 tmf.init(ks);
                 SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
-                SSLContextBuilder.useProtocol("SSL");
-                SSLContextBuilder.setProtocol("SSL");
                 sslContext.init(null, tmf.getTrustManagers(), null);
                 return builder.sslContext(sslContext);
             }else
@@ -86,13 +81,5 @@ public class ConfigArangodb implements ArangoConfiguration {
     @Override
     public String database() {
         return properties.getDbName();
-    }
-
-    @Override
-    public Collection<Converter<?, ?>> customConverters() {
-        Collection<Converter<?, ?>> converters = new ArrayList<>();
-        converters.add(new SyncEnumConverterToSyncEnum());
-        converters.add(new SyncEnumConverterToVPackSlice());
-        return converters;
     }
 }

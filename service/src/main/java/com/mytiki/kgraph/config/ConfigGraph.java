@@ -3,33 +3,25 @@
  * MIT license. See LICENSE file in root directory.
  */
 
-package com.mytiki.kgraph.features.latest.graph;
-
+package com.mytiki.kgraph.config;
 
 import com.arangodb.ArangoDatabase;
 import com.arangodb.entity.EdgeDefinition;
 import com.arangodb.entity.GraphEntity;
 import com.arangodb.model.GraphCreateOptions;
-import com.arangodb.springframework.annotation.EnableArangoRepositories;
 import com.arangodb.springframework.core.ArangoOperations;
-import com.mytiki.kgraph.config.ConfigProperties;
-import com.mytiki.kgraph.utilities.Constants;
+import com.mytiki.kgraph.features.latest.vertex.VertexLookup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
 
 import javax.annotation.PostConstruct;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
 import java.util.Optional;
 
-@Import({GraphVertexLookup.class})
-@EnableArangoRepositories(basePackages = {GraphConfig.PACKAGE_PATH})
-public class GraphConfig {
-    public static final String PACKAGE_PATH = Constants.PACKAGE_FEATURES_LATEST_DOT_PATH + ".graph";
+public class ConfigGraph {
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     @Value("${arangodb.replication:1}")
@@ -42,15 +34,7 @@ public class GraphConfig {
     private ConfigProperties properties;
 
     @Autowired
-    private GraphVertexLookup lookup;
-
-    @Bean
-    public GraphService graphService(
-            @Autowired GraphVertexLookup graphVertexLookup,
-            @Autowired GraphEdgeRepository graphEdgeRepository,
-            @Autowired ConfigProperties configProperties){
-        return new GraphService(graphVertexLookup, graphEdgeRepository, configProperties);
-    }
+    private VertexLookup vertexLookup;
 
     @PostConstruct
     public void defineGraph(){
@@ -72,8 +56,8 @@ public class GraphConfig {
 
         EdgeDefinition edgeDefinition = new EdgeDefinition();
         edgeDefinition.collection("edge");
-        edgeDefinition.from(lookup.getVertices());
-        edgeDefinition.to(lookup.getVertices());
+        edgeDefinition.from(vertexLookup.getVertices());
+        edgeDefinition.to(vertexLookup.getVertices());
 
         if(graph.isEmpty()){
             logger.debug("No graph " + properties.getGraphName() + ". Trying to create it.");
@@ -86,8 +70,8 @@ public class GraphConfig {
                     .findFirst();
             if(
                     currentEdgeDefinition.isEmpty() ||
-                    !currentEdgeDefinition.get().getFrom().equals(edgeDefinition.getFrom()) ||
-                    !currentEdgeDefinition.get().getTo().equals(edgeDefinition.getTo())
+                            !currentEdgeDefinition.get().getFrom().equals(edgeDefinition.getFrom()) ||
+                            !currentEdgeDefinition.get().getTo().equals(edgeDefinition.getTo())
             ){
                 logger.debug("Vertices outdated  " + properties.getGraphName() + ". Trying to replace them");
                 db.graph(properties.getGraphName()).replaceEdgeDefinition(edgeDefinition);

@@ -5,17 +5,23 @@
 
 package com.mytiki.kgraph.features.latest.vertex;
 
+import com.arangodb.springframework.annotation.EnableArangoRepositories;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mytiki.kgraph.features.latest.graph.GraphService;
+import com.mytiki.kgraph.utilities.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 
+@Import(VertexLookup.class)
+@EnableArangoRepositories(VertexConfig.PACKAGE_PATH)
 public class VertexConfig {
+    public static final String PACKAGE_PATH = Constants.PACKAGE_FEATURES_LATEST_DOT_PATH + ".vertex";
+
     @Bean
     public VertexService vertexService(
-            @Autowired GraphService graphService,
+            @Autowired VertexLookup vertexLookup,
             @Autowired ObjectMapper objectMapper){
-        return new VertexService(graphService, objectMapper);
+        return new VertexService(vertexLookup, objectMapper);
     }
 
     @Bean

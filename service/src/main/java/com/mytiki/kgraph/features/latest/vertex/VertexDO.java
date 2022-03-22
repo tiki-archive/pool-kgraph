@@ -3,7 +3,7 @@
  * MIT license. See LICENSE file in root directory.
  */
 
-package com.mytiki.kgraph.features.latest.graph;
+package com.mytiki.kgraph.features.latest.vertex;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
@@ -11,11 +11,9 @@ import org.springframework.data.annotation.Transient;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
 
-public abstract class GraphVertexDO implements Serializable {
+public abstract class VertexDO implements Serializable {
     @Id
     private String id;
-
-    private String value;
 
     private ZonedDateTime created;
 
@@ -24,7 +22,7 @@ public abstract class GraphVertexDO implements Serializable {
     @Transient
     private final String collection;
 
-    public GraphVertexDO(String collection) {
+    public VertexDO(String collection) {
         this.collection = collection;
     }
 
@@ -34,14 +32,6 @@ public abstract class GraphVertexDO implements Serializable {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
     }
 
     public ZonedDateTime getCreated() {
@@ -64,7 +54,7 @@ public abstract class GraphVertexDO implements Serializable {
         return collection;
     }
 
-    public String getRawId(){
+    public String getDbId(){
         return collection + "/" + id;
     }
 
@@ -72,7 +62,6 @@ public abstract class GraphVertexDO implements Serializable {
     public String toString() {
         return "{" +
                 "id='" + id + '\'' +
-                ", value='" + value + '\'' +
                 ", collection='" + collection + '\'' +
                 ", created='" + created + '\'' +
                 ", modified='" + modified + '\'' +
