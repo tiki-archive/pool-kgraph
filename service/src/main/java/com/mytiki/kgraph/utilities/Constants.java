@@ -21,4 +21,5 @@ public interface Constants {
 
     String ROLE_USER = "ROLE_USER";
     String ROLE_CUSTOMER = "ROLE_CUSTOMER";
+    String ROLE_INGEST = "ROLE_INGEST";
 }

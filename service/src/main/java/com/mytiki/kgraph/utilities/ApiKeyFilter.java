@@ -9,7 +9,7 @@ import org.springframework.security.web.authentication.preauth.AbstractPreAuthen
 
 import javax.servlet.http.HttpServletRequest;
 
-public class ApiKeyFilter extends  AbstractPreAuthenticatedProcessingFilter {
+public class ApiKeyFilter extends AbstractPreAuthenticatedProcessingFilter {
 
     private static final String HEADER = "X-API-Key";
 
