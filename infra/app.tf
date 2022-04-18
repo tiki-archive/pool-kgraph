@@ -6,11 +6,11 @@ resource "digitalocean_app" "ingest-app" {
     name   = "kgraph"
     region = local.region
 
-    #domain {
-      #name = "kgraph.mytiki.com"
-      #type = "PRIMARY"
-      #zone = "kgraph.mytiki.com"
-    #}
+    domain {
+      name = "kgraph.mytiki.com"
+      type = "PRIMARY"
+      zone = "kgraph.mytiki.com"
+    }
 
     service {
       name               = "kgraph-service"
