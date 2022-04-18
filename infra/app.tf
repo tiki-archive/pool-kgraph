@@ -1,7 +1,7 @@
 # Copyright (c) TIKI Inc.
 # MIT license. See LICENSE file in root directory.
 
-resource "digitalocean_app" "ingest-app" {
+resource "digitalocean_app" "kgraph-app" {
   spec {
     name   = "kgraph"
     region = local.region
