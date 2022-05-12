@@ -26,7 +26,7 @@ public class EdgeController {
         this.edgeService = edgeService;
     }
 
-    @RequestMapping(method = RequestMethod.POST)
+    @RequestMapping(method = RequestMethod.POST,consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ApiReplyAO<List<EdgeAO>> post(@RequestBody List<EdgeAO> body) {
         return ApiReplyAOFactory.ok(edgeService.add(body));
     }
