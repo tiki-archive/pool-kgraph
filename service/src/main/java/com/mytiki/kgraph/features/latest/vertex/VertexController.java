@@ -12,8 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.UUID;
-
 @RestController
 @RequestMapping(value = VertexController.PATH_CONTROLLER)
 public class VertexController {
@@ -27,9 +25,6 @@ public class VertexController {
 
     @RequestMapping(method = RequestMethod.GET)
     public ApiReplyAO<?> get() {
-        VertexCompanyDO company = new VertexCompanyDO();
-        company.setId(UUID.randomUUID().toString());
-        vertexService.upsert(company);
         return ApiReplyAOFactory.ok(vertexService.schema());
     }
 }

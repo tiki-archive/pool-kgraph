@@ -52,12 +52,12 @@ public class ConfigArangodb implements ArangoConfiguration {
 
     @Override
     public ArangoDB.Builder arango() {
-            ArangoDB.Builder builder = new ArangoDB.Builder()
-                    .useSsl(useSsl)
-                    .host(host, port)
-                    .user(user)
-                    .password(password)
-                    .timeout(timeout);
+        ArangoDB.Builder builder = new ArangoDB.Builder()
+                .useSsl(useSsl)
+                .host(host, port)
+                .user(user)
+                .password(password)
+                .timeout(timeout);
         try {
             if(tlsCA != null && !tlsCA.isEmpty()) {
                 CertificateFactory cf = CertificateFactory.getInstance("X.509");

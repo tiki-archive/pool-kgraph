@@ -12,9 +12,6 @@ public class ConfigProperties {
     @Value("${spring.profiles.active:}")
     private String springProfilesActive;
 
-    @Value("${com.mytiki.kgraph.epsilon}")
-    private Integer epsilon;
-
     @Value("${com.mytiki.kgraph.db.name}")
     private String dbName;
 
@@ -27,14 +24,6 @@ public class ConfigProperties {
 
     public void setSpringProfilesActive(String springProfilesActive) {
         this.springProfilesActive = springProfilesActive;
-    }
-
-    public Integer getEpsilon() {
-        return epsilon;
-    }
-
-    public void setEpsilon(Integer epsilon) {
-        this.epsilon = epsilon;
     }
 
     public String getDbName() {

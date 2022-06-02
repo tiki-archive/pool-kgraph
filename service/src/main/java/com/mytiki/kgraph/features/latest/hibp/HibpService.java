@@ -65,7 +65,10 @@ public class HibpService {
                 flagEmptyClasses(rsp.getBody());
                 flagUnknownClass(rsp.getBody());
                 List<VertexDataBreachDO> doList = rsp.getBody().stream()
-                        .filter(hibpAO -> (hibpAO.getName() != null && hibpAO.getDomain() != null))
+                        .filter(hibpAO -> (
+                                hibpAO.getName() != null &&
+                                hibpAO.getDomain() != null &&
+                                !hibpAO.getDomain().isBlank()))
                         .filter(hibpAO -> hibpAO.getModifiedDate().isAfter(lastCached.toLocalDate()))
                         .map(this::map)
                         .collect(Collectors.toList());
