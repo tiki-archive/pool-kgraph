@@ -7,9 +7,9 @@ resource "digitalocean_app" "kgraph-app" {
     region = local.region
 
     domain {
-      name = "kgraph.mytiki.com"
+      name = "knowledge.mytiki.com"
       type = "PRIMARY"
-      zone = "kgraph.mytiki.com"
+      zone = "knowledge.mytiki.com"
     }
 
     service {
