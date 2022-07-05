@@ -14,8 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.InvocationTargetException;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -56,11 +55,15 @@ public class EdgeService {
                 vmap.put(collection, vlist);
             });
             vmap.forEach((k,v) -> vertexService.insert(v));
-            return edgeRepository.upsertAll(edges).stream().map(e -> new EdgeAO(
-                    new EdgeAOVertex(e.getFrom().getCollection(), e.getFrom().getId()),
-                    new EdgeAOVertex(e.getTo().getCollection(), e.getTo().getId()),
-                    null
-            )).collect(Collectors.toList());
+            return edgeRepository.upsertAll(edges).stream().map(e -> {
+                e.getFrom().setId(sanitizeId(e.getFrom()));
+                e.getTo().setId(sanitizeId(e.getTo()));
+                return new EdgeAO(
+                        new EdgeAOVertex(e.getFrom().getCollection(), e.getFrom().getId()),
+                        new EdgeAOVertex(e.getTo().getCollection(), e.getTo().getId()),
+                        null
+                );
+            }).collect(Collectors.toList());
         }else
             return List.of();
     }
@@ -81,11 +84,8 @@ public class EdgeService {
         }
     }
 
-    public List<EdgeAO> searchSubject(String company, ZonedDateTime start, ZonedDateTime end){
-        List<EdgeDO<? extends VertexDO, ? extends VertexDO>> edges =
-                edgeRepository.searchSubject(company,
-                        start.format(DateTimeFormatter.ISO_LOCAL_DATE),
-                        end.format(DateTimeFormatter.ISO_LOCAL_DATE));
+    public List<EdgeAO> searchSubject(String company){
+        List<EdgeDO<? extends VertexDO, ? extends VertexDO>> edges = edgeRepository.searchSubject(company);
         return edges.stream().map(e -> new EdgeAO(
                 new EdgeAOVertex(e.getFrom().getCollection(), e.getFrom().getId()),
                 new EdgeAOVertex(e.getTo().getCollection(), e.getTo().getId()),
@@ -118,5 +118,18 @@ public class EdgeService {
             }
         }
         return new ArrayList<>(edges.values());
+    }
+
+
+    private String sanitizeId(VertexDO vertex){
+        if(vertex.getCollection().equals("subject")){
+            String b64Id = Base64.getEncoder().encodeToString(vertex.getId().getBytes(StandardCharsets.UTF_8));
+            return b64Id.substring(0 , Math.min(b64Id.length(), 254));
+        }
+        if(vertex.getCollection().equals("occurrence")){
+            return vertex.getId().substring(0 ,
+                    Math.min(vertex.getId().length(), 254)).replace('/', ',');
+        }
+        else return vertex.getId();
     }
 }

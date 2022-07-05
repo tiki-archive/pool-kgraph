@@ -30,11 +30,10 @@ public interface EdgeRepository extends
 
 
     //TODO generify search
-    @Query("FOR v,e,p IN 2..2 ANY @company GRAPH kgraph " +
-            "FILTER v.date >= @start AND v.date <= @end " +
-            "FILTER (FOR v2, e2 IN 1..1 ANY p.vertices[1] GRAPH kgraph FILTER v2.action == 'email' RETURN 1) == [1] " +
-            "RETURN (FOR v2, e2 IN 1..1 ANY p.vertices[1] GRAPH kgraph FILTER v2.subject != null RETURN {'subject': v2.subject, 'occurrences': 1/(e2.weight)})")
-    List<EdgeDO<? extends VertexDO, ? extends VertexDO>> searchSubject(String start, String end, String company);
+    @Query("FOR v, e, p IN 2..2 ANY @company GRAPH kgraph " +
+            "FILTER (FOR v2, e2 IN 1..1 ANY p.vertices[1] GRAPH kgraph FILTER v2._id == 'action/email' RETURN 1) == [1] " +
+            "RETURN (FOR v2, e2 IN 1..1 ANY p.vertices[1] GRAPH kgraph FILTER IS_SAME_COLLECTION('subject', v2) RETURN {'subject': v2.text, 'occurrences': 1/(e2.weight)})")
+    List<EdgeDO<? extends VertexDO, ? extends VertexDO>> searchSubject(String company);
 
     @Query("LET now = DATE_ISO8601(DATE_NOW()) " +
             "UPSERT { _from: @from, _to: @to } " +

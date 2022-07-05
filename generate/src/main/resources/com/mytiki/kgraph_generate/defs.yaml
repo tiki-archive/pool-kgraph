@@ -63,6 +63,9 @@ vertices:
   - type: action
   - type: date
   - type: subject
+    fields:
+      - name: text
+        clazz: java.lang.String
 
 # Supported Classes (https://www.arangodb.com/docs/stable/drivers/spring-data-reference-mapping.html)
 # java.lang.String
