@@ -5,6 +5,14 @@
 
 package com.mytiki.kgraph.features.latest.vertex;
 
+{{#override}}
+import com.arangodb.springframework.annotation.Query;
+import com.arangodb.springframework.annotation.SpelParam;
+
+import java.util.List;
+import java.util.stream.Collectors;
+{{/override}}
+
 public interface Vertex{{{type_pascal}}}Repository extends VertexRepository<Vertex{{{type_pascal}}}DO> {
 {{#override}}
     @Override
