@@ -10,6 +10,8 @@ public class KGraphDefsField {
    private String clazz;
    private String collection;
 
+   private boolean insert;
+
    public String getName() {
       return name;
    }
@@ -32,5 +34,13 @@ public class KGraphDefsField {
 
    public void setCollection(String collection) {
       this.collection = collection;
+   }
+
+   public boolean getInsert() {
+      return insert;
+   }
+
+   public void setInsert(boolean insert) {
+      this.insert = insert;
    }
 }
