@@ -9,10 +9,7 @@ import com.mytiki.common.ApiConstants;
 import com.mytiki.common.reply.ApiReplyAO;
 import com.mytiki.common.reply.ApiReplyAOFactory;
 import com.mytiki.kgraph.utilities.Constants;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
 import java.util.List;
@@ -32,5 +29,12 @@ public class EdgeController {
     @RequestMapping(method = RequestMethod.POST)
     public ApiReplyAO<List<EdgeAO>> post(@RequestBody List<EdgeAO> body) {
         return ApiReplyAOFactory.ok(edgeService.add(body));
+    }
+
+
+    @RolesAllowed(Constants.ROLE_ETL)
+    @RequestMapping(method = RequestMethod.GET, path = "/search/subject")
+    public ApiReplyAO<List<EdgeAO>> get(@RequestParam String company) {
+        return ApiReplyAOFactory.ok(edgeService.searchSubject(company));
     }
 }

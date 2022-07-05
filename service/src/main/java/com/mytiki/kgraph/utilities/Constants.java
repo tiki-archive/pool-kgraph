@@ -20,6 +20,6 @@ public interface Constants {
     String CLAIM_ISS_BOUNCER = "com.mytiki.bouncer";
 
     String ROLE_USER = "ROLE_USER";
-    String ROLE_CUSTOMER = "ROLE_CUSTOMER";
+    String ROLE_ETL = "ROLE_ETL";
     String ROLE_INGEST = "ROLE_INGEST";
 }

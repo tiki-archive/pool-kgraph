@@ -12,8 +12,11 @@ import com.mytiki.common.exception.ApiExceptionBuilder;
 import org.springframework.http.HttpStatus;
 
 import java.lang.reflect.InvocationTargetException;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class VertexService {
     private final ObjectMapper objectMapper;
@@ -52,7 +55,21 @@ public class VertexService {
     }
 
     public <T extends VertexDO> List<T> insert (List<T> vertices){
-        VertexRepository<T> repository = getRepository(vertices.get(0).getCollection());
+        String collection = vertices.get(0).getCollection();
+        VertexRepository<T> repository = getRepository(collection);
+        if(collection.equals("subject")){
+            vertices = vertices.stream().peek(v -> {
+                ((VertexSubjectDO) v).setText(v.getId());
+                String b64Id = Base64.getEncoder().encodeToString(v.getId().getBytes(StandardCharsets.UTF_8)).replace('/', ',');
+                v.setId(b64Id.substring(0 , Math.min(b64Id.length(), 254)));
+            }).collect(Collectors.toList());
+        }
+        if(collection.equals("occurrence")){
+            vertices = vertices.stream().peek(v -> {
+                String b64Id = v.getId().substring(0 , Math.min(v.getId().length(), 254)).replace('/', ',');
+                v.setId(b64Id);
+            }).collect(Collectors.toList());
+        }
         return repository.insertAll(vertices);
     }
 
