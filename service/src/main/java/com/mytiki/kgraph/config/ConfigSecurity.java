@@ -60,6 +60,9 @@ public class ConfigSecurity extends WebSecurityConfigurerAdapter {
     @Value("${com.mytiki.kgraph.api_key.ingest}")
     private String ingestApiKey;
 
+    @Value("${com.mytiki.kgraph.api_key.etl}")
+    private String etlApiKey;
+
     @Value("${com.mytiki.kgraph.jwt.bouncer.public_key}")
     private String jwtBouncerPublicKey;
 
@@ -110,6 +113,8 @@ public class ConfigSecurity extends WebSecurityConfigurerAdapter {
                 )
                 .addFilter(new ApiKeyFilter()
                         .setAuthMgr(new ApiKeyAuthMgr(ingestApiKey, Constants.ROLE_INGEST)))
+                .addFilter(new ApiKeyFilter()
+                        .setAuthMgr(new ApiKeyAuthMgr(etlApiKey, Constants.ROLE_ETL)))
                 .authorizeRequests(authorize -> authorize
                         .antMatchers(HttpMethod.GET, ApiConstants.HEALTH_ROUTE).permitAll()
                         .antMatchers(
