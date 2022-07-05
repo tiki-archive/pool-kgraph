@@ -14,6 +14,8 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.InvocationTargetException;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -77,6 +79,18 @@ public class EdgeService {
             logger.warn("Bad vertex", e);
             return List.of();
         }
+    }
+
+    public List<EdgeAO> searchSubject(String company, ZonedDateTime start, ZonedDateTime end){
+        List<EdgeDO<? extends VertexDO, ? extends VertexDO>> edges =
+                edgeRepository.searchSubject(company,
+                        start.format(DateTimeFormatter.ISO_LOCAL_DATE),
+                        end.format(DateTimeFormatter.ISO_LOCAL_DATE));
+        return edges.stream().map(e -> new EdgeAO(
+                new EdgeAOVertex(e.getFrom().getCollection(), e.getFrom().getId()),
+                new EdgeAOVertex(e.getTo().getCollection(), e.getTo().getId()),
+                null))
+                .collect(Collectors.toList());
     }
 
     private List<EdgeDO<? extends VertexDO,? extends VertexDO>> compress(List<EdgeAO> req){

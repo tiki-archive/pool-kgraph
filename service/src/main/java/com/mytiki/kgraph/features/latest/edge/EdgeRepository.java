@@ -26,7 +26,15 @@ public interface EdgeRepository extends
     List<EdgeDO<? extends VertexDO, ? extends VertexDO>> traverse(String start, int depth);
 
     @Query("FOR v,e,p IN ANY SHORTEST_PATH @start TO @end GRAPH kgraph OPTIONS {weightAttribute: 'weight'} FILTER e != null RETURN e")
-    List<EdgeDO<? extends VertexDO, ? extends VertexDO>> shortestPath(String start, String end, Integer epsilon);
+    List<EdgeDO<? extends VertexDO, ? extends VertexDO>> shortestPath(String start, String end);
+
+
+    //TODO generify search
+    @Query("FOR v,e,p IN 2..2 ANY @company GRAPH kgraph " +
+            "FILTER v.date >= @start AND v.date <= @end " +
+            "FILTER (FOR v2, e2 IN 1..1 ANY p.vertices[1] GRAPH kgraph FILTER v2.action == 'email' RETURN 1) == [1] " +
+            "RETURN (FOR v2, e2 IN 1..1 ANY p.vertices[1] GRAPH kgraph FILTER v2.subject != null RETURN {'subject': v2.subject, 'occurrences': 1/(e2.weight)})")
+    List<EdgeDO<? extends VertexDO, ? extends VertexDO>> searchSubject(String start, String end, String company);
 
     @Query("LET now = DATE_ISO8601(DATE_NOW()) " +
             "UPSERT { _from: @from, _to: @to } " +
