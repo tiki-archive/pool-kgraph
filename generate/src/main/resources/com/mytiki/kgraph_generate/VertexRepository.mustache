@@ -6,4 +6,25 @@
 package com.mytiki.kgraph.features.latest.vertex;
 
 public interface Vertex{{{type_pascal}}}Repository extends VertexRepository<Vertex{{{type_pascal}}}DO> {
+{{#override}}
+    @Override
+    @Query("LET now = DATE_ISO8601(DATE_NOW()) " +
+            "FOR i IN #{#idArray} " +
+            "INSERT { _key: i, _class: \"#{#clazz}\", {{#fields}}{{^no_insert}}{{{name_camel}}}: i.{{{name_camel}}},{{/no_insert}}{{/fields}} created: now, modified: now } " +
+            "INTO #collection OPTIONS #{#options} " +
+            "RETURN NEW")
+    List<Vertex{{{type_pascal}}}DO> _insertAll(
+            @SpelParam("idArray") String idArray,
+            @SpelParam("clazz") String clazz,
+            @SpelParam("options") String options);
+
+    @Override
+    default List<Vertex{{{type_pascal}}}DO> insertAll(List<Vertex{{{type_pascal}}}DO> vertices){
+        return this._insertAll(
+    "[" + vertices.stream().map(v -> "{ key: \"" + v.getId() + "\",{{#fields}}{{^no_insert}}{{{name_camel}}}: \"" + v.get{{{name_pascal}}}() + "\" {{^last}}, {{/last}}{{/no_insert}}{{/fields}} }")
+                    .collect(Collectors.joining(",")) + "]",
+                vertices.get(0).getClass().getName(),
+                "{ overwriteMode: \"ignore\" }" );
+    }
+{{/override}}
 }

@@ -47,6 +47,11 @@ public class KGraphGenerate {
                             map.put("collection_java", m.getCollection().substring(m.getClazz().lastIndexOf(".") + 1));
                             map.put("collection_json", jsonType(m.getCollection()));
                         }
+                        if(m.getInsert()){
+                            placeholders.put("override", "true");
+                        }else{
+                            map.put("no_insert", "true");
+                        }
                         fields.add(map);
                         imports.add(m.getClazz());
                     });

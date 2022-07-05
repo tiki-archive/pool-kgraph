@@ -66,6 +66,7 @@ vertices:
     fields:
       - name: text
         clazz: java.lang.String
+        insert: true
 
 # Supported Classes (https://www.arangodb.com/docs/stable/drivers/spring-data-reference-mapping.html)
 # java.lang.String
