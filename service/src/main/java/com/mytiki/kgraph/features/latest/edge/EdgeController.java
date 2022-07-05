@@ -9,6 +9,7 @@ import com.mytiki.common.ApiConstants;
 import com.mytiki.common.reply.ApiReplyAO;
 import com.mytiki.common.reply.ApiReplyAOFactory;
 import com.mytiki.kgraph.utilities.Constants;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
@@ -36,8 +37,8 @@ public class EdgeController {
     @RolesAllowed(Constants.ROLE_ETL)
     @RequestMapping(method = RequestMethod.GET, path = "/search/subject")
     public ApiReplyAO<List<EdgeAO>> get(@RequestParam String company,
-                                        @RequestParam ZonedDateTime start,
-                                        @RequestParam ZonedDateTime end) {
+                                        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) ZonedDateTime start,
+                                        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) ZonedDateTime end) {
         return ApiReplyAOFactory.ok(edgeService.searchSubject(company, start, end));
     }
 }
