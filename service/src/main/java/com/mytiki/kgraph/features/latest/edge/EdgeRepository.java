@@ -31,7 +31,7 @@ public interface EdgeRepository extends
 
     //TODO generify search
     @Query("FOR v, e, p IN 2..2 ANY @company GRAPH kgraph " +
-            "FILTER (FOR v2, e2 IN 1..1 ANY p.vertices[1] GRAPH kgraph FILTER v2._id == 'action/email' RETURN 1) == [1] " +
+            "FILTER (FOR v2, e2 IN 1..1 ANY p.vertices[1] GRAPH kgraph FILTER v2._id == 'action/email_received' RETURN 1) == [1] " +
             "RETURN (FOR v2, e2 IN 1..1 ANY p.vertices[1] GRAPH kgraph FILTER IS_SAME_COLLECTION('subject', v2) RETURN {'subject': v2.text, 'occurrences': 1/(e2.weight)})")
     List<EdgeDO<? extends VertexDO, ? extends VertexDO>> searchSubject(String company);
 
